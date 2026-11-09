@@ -13,7 +13,7 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const storage = (() => { try { return window.localStorage; } catch { return null; } })();
 let team = loadParties(storage);
 let match = createBattle(team), state = match.view(), sequence, exhibition;
-let exhibitionRate = Number($('replayRate').value);
+let playbackRate = Number($('replayRate').value);
 let mode = 'play', paused = reduced, ready = false, arena, gameTime = 0, showTime = 0;
 let last = performance.now(), stamp = '', note = lookup(team[0][0].id).name + ' is ready.';
 let log = [];
@@ -56,7 +56,7 @@ const friends = setupFriendLobby({
     log.push(...events.map(event=>'Turn '+state.round+' · '+event.text));
     state=view;
     if (sequence) sequence.segments.push(...segments);
-    else if (segments.length) sequence={segments,index:0,elapsed:0};
+    else if (segments.length) startSequence(segments);
     refresh(true);
   },
   onExit(){ mode='play';rematch(); },
@@ -86,8 +86,13 @@ function act(command) {
     log.push(...events.map(event=>'Turn '+before.round+' · '+event.text));
     command=null;
   } while (!state.winner && state.playerRequest==='wait');
-  sequence=segments.length ? {segments,index:0,elapsed:0} : null;
+  if (segments.length) startSequence(segments);
   refresh(true);
+}
+
+function startSequence(segments) {
+  sequence={segments,index:0,elapsed:0};
+  last=performance.now();
 }
 
 function segmentLength(segment) {
@@ -102,14 +107,19 @@ function currentFrame() {
 }
 
 function advance(dt) {
-  gameTime += dt;
-  if (!sequence) return;
-  sequence.elapsed += dt;
-  const duration = segmentLength(sequence.segments[sequence.index]);
-  if (sequence.elapsed < duration) return;
-  sequence.elapsed -= duration;
-  sequence.index++;
-  if (sequence.index < sequence.segments.length) return;
+  if (!sequence) {
+    gameTime += dt;
+    return;
+  }
+  const animationTime = dt * playbackRate;
+  gameTime += animationTime;
+  sequence.elapsed += animationTime;
+  while (sequence.index < sequence.segments.length) {
+    const duration = segmentLength(sequence.segments[sequence.index]);
+    if (sequence.elapsed < duration) return;
+    sequence.elapsed -= duration;
+    sequence.index++;
+  }
   sequence = null;
   note = state.winner ? resultText(state.winner) : log.at(-1)?.replace(/^Turn \d+ · /,'') || 'Choose a move.';
   $('turnLog').replaceChildren(...log.map(text => {
@@ -251,13 +261,17 @@ function draw() {
   refresh();
 }
 
+function advanceClock(now) {
+  const elapsed = Math.max(0,(now-last)/1000);
+  last=Math.max(last,now);
+  if (document.hidden || $('dex').open) return;
+  if (mode === 'play') advance(elapsed);
+  else if (!paused) showTime=(showTime+elapsed*playbackRate)%SHOW_LENGTH;
+}
+
 function animate(now) {
-  const elapsed = Math.max(0,(now-last)/1000); last=now;
-  if (!$('dex').open) {
-    if (mode === 'play') advance(Math.min(.12,elapsed));
-    else if (!paused && !document.hidden) showTime=(showTime+elapsed*exhibitionRate)%SHOW_LENGTH;
-    draw();
-  }
+  advanceClock(now);
+  if (!document.hidden && !$('dex').open) draw();
   requestAnimationFrame(animate);
 }
 
@@ -266,7 +280,10 @@ $('show').onclick = () => useMode('show');
 $('focus').onclick = () => arena?.focus();
 $('reset').onclick = () => arena?.reset();
 document.addEventListener('visibilitychange', () => { last=performance.now(); });
-$('replayRate').onchange = () => { exhibitionRate=Number($('replayRate').value); last=performance.now(); };
+$('replayRate').onchange = () => {
+  advanceClock(performance.now());
+  playbackRate=Number($('replayRate').value);
+};
 $('pause').onclick = () => { last=performance.now(); paused=!paused; refresh(true); };
 $('seek').oninput = e => { showTime=Number(e.target.value); paused=true; refresh(true); };
 $('again').onclick = rematch;

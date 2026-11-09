@@ -34,6 +34,8 @@ try {
   await guest.locator('#friendConnect').click();
   await Promise.all([host,guest].map(p=>p.waitForFunction(()=>document.querySelector('#decklabel').textContent==='FRIEND BATTLE',{},{timeout:50000})));
   await sameField(host,guest);
+  await host.getByRole('combobox',{name:'Speed',exact:true}).selectOption('2');
+  await guest.getByRole('combobox',{name:'Speed',exact:true}).selectOption('1');
   // A third trainer cannot claim the occupied seat.
   const extra=await trainer([{id:25,moves:[85]}]);
   await ready(extra,invite);await extra.locator('#friendConnect').click();
@@ -46,6 +48,8 @@ try {
   await host.waitForFunction(()=>document.querySelector('#prompt').textContent==='Choose a replacement.');
   await guest.waitForFunction(()=>document.querySelector('#intel').textContent.includes('replacement'));
   await sameField(host,guest);
+  assert.equal(await host.locator('#replayRate').inputValue(),'2');
+  assert.equal(await guest.locator('#replayRate').inputValue(),'1');
   const hp=await guest.locator('#php').innerText();
   await host.locator('[data-switch-slot="1"]').click();
   await Promise.all([host,guest].map(clickable));
