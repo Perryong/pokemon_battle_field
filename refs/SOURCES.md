@@ -1,0 +1,16 @@
+# Source decisions
+
+- Reference: [Diorama's README capture](https://github.com/sloemo01/diorama/blob/c790df5007be54cccb6c083f7743fae120c89cf4/media/pikachu-vs-charizard.gif). See choreography.jpg for six sampled frames: a stationary three-quarter view, two distinct sides of the field, anticipation → contact → recovery, and a recall that follows the knockout. The upstream verification notes describe a commissioned project; its scene source is not included in the kit.
+- Source index: [Perryong/polyfork-catalog](https://github.com/Perryong/polyfork-catalog/tree/fcae470bd9169e57e6b5d67ccdd9a661c8746598). Searched the 3,156 asset records for Pikachu and Charizard; neither character was listed. Authored identifiable articulated silhouettes (ears, cheeks and lightning tail; horns, belly, wing membranes and tail flame). No extracted game models.
+- Used the Stadium kit for both structures below. The catalogue points to externally hosted GLBs; both are stored locally. Source pages, license and changes appear in CREDITS.md and the in-app credits.
+- Grandstand SHA-256: 48680042cd5e19055130b27b217d84ebe532eddcf95ec8c9c11fd7e99c980f80. One narrow column of tiered seats. Instanced across the rear of the arena.
+- Floodlight SHA-256: cd6778a7fd452cfe2e1bb81e00c38262ba2a20b57e096c7ff636ae0761253fc4. Pair of masts, scaled to 4.8 scene units. Source meshes contain their own copyright records.
+
+## Kanto expansion
+- The local catalogue is generated from the pinned PokéAPI commit above (6ea97b5641faa12e090866e8144ae8f57764fc64). scripts/import-kanto.py selects the 151 default forms, converts decimetres to metres and hectograms to kilograms, and joins English species names, types and Red/Blue/Yellow learnsets. Move names are selected from damaging attacks; the original Pikachu repertoire and Charizard counters are retained. Named League drills cover missing slots.
+- Units: [PokéAPI Pokémon resource](https://pokeapi.co/docs/v2#pokemon). Model dimensions are Pokédex species averages, not dimensions of a particular individual. Body length for serpentine miniatures is measured along the authored centerline; body thickness, resting posture and other proportions are artistic approximations.
+- All roster models are hand-authored Three.js volume geometry, built into the offline JS. Front-index portraits come from qa/kanto-atlas.mjs rendering these exact models. No external requests during play.
+- Contact vs. ranged staging uses the pinned PokéAPI `move_flag_map.csv` contact flag. The animation rigs, timing, poses and effects are original Pokémon Battle Field interpretations of the models, not extracted game animation clips.
+
+## Red / Blue / Yellow movesets and mechanics
+The Gen I catalogue supersedes the previous arcade move selection. The importer uses @pkmn/dex 0.10.15, Pokémon Showdown legality data at a78551b070769eb22e5261bb220d21153bf5788c and [pret/pokered](https://github.com/pret/pokered/tree/0dbf95cd12f5b1511c62ce69efe283000f780a8f) for original move parameters. PokéAPI provides the existing names and dimensions. Generation II tradebacks are excluded. Supported Gen I distributions and Stadium sources carry notes in the Pokédex. The runtime uses [@pkmn/sim](https://github.com/pkmn/ps) 0.10.15 for battle rules.

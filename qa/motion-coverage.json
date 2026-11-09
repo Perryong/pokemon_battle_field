@@ -1,0 +1,1651 @@
+[
+  {
+    "id": 1,
+    "name": "Bulbasaur",
+    "idlePixels": 1749,
+    "attackPixels": [
+      2129,
+      2295,
+      1734,
+      2295
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Ivysaur",
+    "idlePixels": 1498,
+    "attackPixels": [
+      2159,
+      2758,
+      2126,
+      2758
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Venusaur",
+    "idlePixels": 1560,
+    "attackPixels": [
+      3165,
+      3165,
+      2410,
+      2915
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Charmander",
+    "idlePixels": 2433,
+    "attackPixels": [
+      2792,
+      3383,
+      2792,
+      3383
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Charmeleon",
+    "idlePixels": 2030,
+    "attackPixels": [
+      2226,
+      2860,
+      2226,
+      2860
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Charizard",
+    "idlePixels": 1770,
+    "attackPixels": [
+      2290,
+      2290,
+      2304,
+      2304
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Squirtle",
+    "idlePixels": 867,
+    "attackPixels": [
+      1627,
+      1510,
+      2330,
+      1627
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Wartortle",
+    "idlePixels": 1780,
+    "attackPixels": [
+      2419,
+      2735,
+      3206,
+      2419
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Blastoise",
+    "idlePixels": 827,
+    "attackPixels": [
+      1980,
+      1548,
+      2548,
+      1980
+    ]
+  },
+  {
+    "id": 10,
+    "name": "Caterpie",
+    "idlePixels": 2980,
+    "attackPixels": [
+      3491,
+      3261
+    ]
+  },
+  {
+    "id": 11,
+    "name": "Metapod",
+    "idlePixels": 1814,
+    "attackPixels": [
+      4460,
+      3382,
+      3382
+    ]
+  },
+  {
+    "id": 12,
+    "name": "Butterfree",
+    "idlePixels": 3309,
+    "attackPixels": [
+      2997,
+      2755,
+      2997,
+      2992
+    ]
+  },
+  {
+    "id": 13,
+    "name": "Weedle",
+    "idlePixels": 1926,
+    "attackPixels": [
+      2895,
+      2739
+    ]
+  },
+  {
+    "id": 14,
+    "name": "Kakuna",
+    "idlePixels": 1504,
+    "attackPixels": [
+      5096,
+      5049
+    ]
+  },
+  {
+    "id": 15,
+    "name": "Beedrill",
+    "idlePixels": 2430,
+    "attackPixels": [
+      2636,
+      2636,
+      2636,
+      1779
+    ]
+  },
+  {
+    "id": 16,
+    "name": "Pidgey",
+    "idlePixels": 1122,
+    "attackPixels": [
+      1443,
+      1399,
+      1135,
+      1443
+    ]
+  },
+  {
+    "id": 17,
+    "name": "Pidgeotto",
+    "idlePixels": 1406,
+    "attackPixels": [
+      1811,
+      1805,
+      1389,
+      1811
+    ]
+  },
+  {
+    "id": 18,
+    "name": "Pidgeot",
+    "idlePixels": 1444,
+    "attackPixels": [
+      1674,
+      1674,
+      1360,
+      1709
+    ]
+  },
+  {
+    "id": 19,
+    "name": "Rattata",
+    "idlePixels": 1425,
+    "attackPixels": [
+      2158,
+      1921,
+      2158,
+      2158
+    ]
+  },
+  {
+    "id": 20,
+    "name": "Raticate",
+    "idlePixels": 1204,
+    "attackPixels": [
+      1855,
+      1855,
+      2089,
+      2089
+    ]
+  },
+  {
+    "id": 21,
+    "name": "Spearow",
+    "idlePixels": 900,
+    "attackPixels": [
+      1748,
+      1548,
+      1148,
+      1748
+    ]
+  },
+  {
+    "id": 22,
+    "name": "Fearow",
+    "idlePixels": 911,
+    "attackPixels": [
+      1633,
+      1633,
+      1305,
+      1657
+    ]
+  },
+  {
+    "id": 23,
+    "name": "Ekans",
+    "idlePixels": 2364,
+    "attackPixels": [
+      2683,
+      2735,
+      2683,
+      2735
+    ]
+  },
+  {
+    "id": 24,
+    "name": "Arbok",
+    "idlePixels": 3555,
+    "attackPixels": [
+      4156,
+      4156,
+      4875,
+      4156
+    ]
+  },
+  {
+    "id": 25,
+    "name": "Pikachu",
+    "idlePixels": 2433,
+    "attackPixels": [
+      2803,
+      3288,
+      2964,
+      2803
+    ]
+  },
+  {
+    "id": 26,
+    "name": "Raichu",
+    "idlePixels": 1314,
+    "attackPixels": [
+      1490,
+      1490,
+      1457,
+      1490
+    ]
+  },
+  {
+    "id": 27,
+    "name": "Sandshrew",
+    "idlePixels": 2809,
+    "attackPixels": [
+      3849,
+      6223,
+      6223,
+      6223
+    ]
+  },
+  {
+    "id": 28,
+    "name": "Sandslash",
+    "idlePixels": 2280,
+    "attackPixels": [
+      4687,
+      4687,
+      4500,
+      4500
+    ]
+  },
+  {
+    "id": 29,
+    "name": "Nidoran♀",
+    "idlePixels": 2046,
+    "attackPixels": [
+      2384,
+      2384,
+      2521,
+      2521
+    ]
+  },
+  {
+    "id": 30,
+    "name": "Nidorina",
+    "idlePixels": 2006,
+    "attackPixels": [
+      2464,
+      2464,
+      2495,
+      2495
+    ]
+  },
+  {
+    "id": 31,
+    "name": "Nidoqueen",
+    "idlePixels": 1158,
+    "attackPixels": [
+      1946,
+      1946,
+      1946,
+      1946
+    ]
+  },
+  {
+    "id": 32,
+    "name": "Nidoran♂",
+    "idlePixels": 1921,
+    "attackPixels": [
+      2627,
+      2627,
+      2945,
+      2945
+    ]
+  },
+  {
+    "id": 33,
+    "name": "Nidorino",
+    "idlePixels": 1942,
+    "attackPixels": [
+      2647,
+      2647,
+      2737,
+      2737
+    ]
+  },
+  {
+    "id": 34,
+    "name": "Nidoking",
+    "idlePixels": 1254,
+    "attackPixels": [
+      2138,
+      2138,
+      2520,
+      2138
+    ]
+  },
+  {
+    "id": 35,
+    "name": "Clefairy",
+    "idlePixels": 528,
+    "attackPixels": [
+      617,
+      645,
+      445,
+      617
+    ]
+  },
+  {
+    "id": 36,
+    "name": "Clefable",
+    "idlePixels": 1065,
+    "attackPixels": [
+      1364,
+      1364,
+      1090,
+      1300
+    ]
+  },
+  {
+    "id": 37,
+    "name": "Vulpix",
+    "idlePixels": 2578,
+    "attackPixels": [
+      3050,
+      2825,
+      2661,
+      3050
+    ]
+  },
+  {
+    "id": 38,
+    "name": "Ninetales",
+    "idlePixels": 2375,
+    "attackPixels": [
+      2797,
+      2797,
+      2660,
+      2797
+    ]
+  },
+  {
+    "id": 39,
+    "name": "Jigglypuff",
+    "idlePixels": 3041,
+    "attackPixels": [
+      4315,
+      4952,
+      4315,
+      4315
+    ]
+  },
+  {
+    "id": 40,
+    "name": "Wigglytuff",
+    "idlePixels": 3937,
+    "attackPixels": [
+      3906,
+      4310,
+      4310,
+      3906
+    ]
+  },
+  {
+    "id": 41,
+    "name": "Zubat",
+    "idlePixels": 184,
+    "attackPixels": [
+      2437,
+      2437,
+      2393,
+      2437
+    ]
+  },
+  {
+    "id": 42,
+    "name": "Golbat",
+    "idlePixels": 2151,
+    "attackPixels": [
+      2090,
+      2040,
+      1844,
+      2090
+    ]
+  },
+  {
+    "id": 43,
+    "name": "Oddish",
+    "idlePixels": 2225,
+    "attackPixels": [
+      3401,
+      3401,
+      3010,
+      2400
+    ]
+  },
+  {
+    "id": 44,
+    "name": "Gloom",
+    "idlePixels": 3901,
+    "attackPixels": [
+      4309,
+      4309,
+      3708,
+      3598
+    ]
+  },
+  {
+    "id": 45,
+    "name": "Vileplume",
+    "idlePixels": 2579,
+    "attackPixels": [
+      2940,
+      2940,
+      2940,
+      2731
+    ]
+  },
+  {
+    "id": 46,
+    "name": "Paras",
+    "idlePixels": 971,
+    "attackPixels": [
+      1381,
+      1144,
+      1381,
+      919
+    ]
+  },
+  {
+    "id": 47,
+    "name": "Parasect",
+    "idlePixels": 1399,
+    "attackPixels": [
+      2163,
+      2061,
+      2061,
+      2009
+    ]
+  },
+  {
+    "id": 48,
+    "name": "Venonat",
+    "idlePixels": 2623,
+    "attackPixels": [
+      5107,
+      5080,
+      5173,
+      5080
+    ]
+  },
+  {
+    "id": 49,
+    "name": "Venomoth",
+    "idlePixels": 1396,
+    "attackPixels": [
+      3450,
+      3662,
+      3008,
+      3662
+    ]
+  },
+  {
+    "id": 50,
+    "name": "Diglett",
+    "idlePixels": 2776,
+    "attackPixels": [
+      6566,
+      6566,
+      6566,
+      6566
+    ]
+  },
+  {
+    "id": 51,
+    "name": "Dugtrio",
+    "idlePixels": 1509,
+    "attackPixels": [
+      3777,
+      3777,
+      2259,
+      2259
+    ]
+  },
+  {
+    "id": 52,
+    "name": "Meowth",
+    "idlePixels": 2488,
+    "attackPixels": [
+      3805,
+      3590,
+      3805,
+      3805
+    ]
+  },
+  {
+    "id": 53,
+    "name": "Persian",
+    "idlePixels": 1754,
+    "attackPixels": [
+      3453,
+      3453,
+      3430,
+      3430
+    ]
+  },
+  {
+    "id": 54,
+    "name": "Psyduck",
+    "idlePixels": 2070,
+    "attackPixels": [
+      3038,
+      3038,
+      3038,
+      3038
+    ]
+  },
+  {
+    "id": 55,
+    "name": "Golduck",
+    "idlePixels": 1613,
+    "attackPixels": [
+      2576,
+      2576,
+      2576,
+      2576
+    ]
+  },
+  {
+    "id": 56,
+    "name": "Mankey",
+    "idlePixels": 1530,
+    "attackPixels": [
+      1590,
+      1590,
+      1590,
+      1590
+    ]
+  },
+  {
+    "id": 57,
+    "name": "Primeape",
+    "idlePixels": 1097,
+    "attackPixels": [
+      1538,
+      1538,
+      1474,
+      1538
+    ]
+  },
+  {
+    "id": 58,
+    "name": "Growlithe",
+    "idlePixels": 2322,
+    "attackPixels": [
+      3691,
+      4131,
+      1659,
+      3691
+    ]
+  },
+  {
+    "id": 59,
+    "name": "Arcanine",
+    "idlePixels": 2040,
+    "attackPixels": [
+      3941,
+      3941,
+      2114,
+      3941
+    ]
+  },
+  {
+    "id": 60,
+    "name": "Poliwag",
+    "idlePixels": 1493,
+    "attackPixels": [
+      1642,
+      1642,
+      917,
+      1642
+    ]
+  },
+  {
+    "id": 61,
+    "name": "Poliwhirl",
+    "idlePixels": 1101,
+    "attackPixels": [
+      1678,
+      1678,
+      1067,
+      1678
+    ]
+  },
+  {
+    "id": 62,
+    "name": "Poliwrath",
+    "idlePixels": 976,
+    "attackPixels": [
+      1854,
+      1360,
+      1854,
+      984
+    ]
+  },
+  {
+    "id": 63,
+    "name": "Abra",
+    "idlePixels": 2499,
+    "attackPixels": [
+      3485,
+      3483,
+      3483,
+      3483
+    ]
+  },
+  {
+    "id": 64,
+    "name": "Kadabra",
+    "idlePixels": 2103,
+    "attackPixels": [
+      3111,
+      2951,
+      565,
+      2951
+    ]
+  },
+  {
+    "id": 65,
+    "name": "Alakazam",
+    "idlePixels": 1819,
+    "attackPixels": [
+      2726,
+      2726,
+      766,
+      2553
+    ]
+  },
+  {
+    "id": 66,
+    "name": "Machop",
+    "idlePixels": 1778,
+    "attackPixels": [
+      2199,
+      2196,
+      2199,
+      2196
+    ]
+  },
+  {
+    "id": 67,
+    "name": "Machoke",
+    "idlePixels": 2133,
+    "attackPixels": [
+      2733,
+      2852,
+      2733,
+      2852
+    ]
+  },
+  {
+    "id": 68,
+    "name": "Machamp",
+    "idlePixels": 3053,
+    "attackPixels": [
+      4868,
+      4518,
+      4518,
+      4868
+    ]
+  },
+  {
+    "id": 69,
+    "name": "Bellsprout",
+    "idlePixels": 2555,
+    "attackPixels": [
+      3167,
+      3167,
+      3074,
+      1275
+    ]
+  },
+  {
+    "id": 70,
+    "name": "Weepinbell",
+    "idlePixels": 2493,
+    "attackPixels": [
+      4825,
+      4825,
+      4909,
+      1027
+    ]
+  },
+  {
+    "id": 71,
+    "name": "Victreebel",
+    "idlePixels": 2806,
+    "attackPixels": [
+      6044,
+      6044,
+      6044,
+      1450
+    ]
+  },
+  {
+    "id": 72,
+    "name": "Tentacool",
+    "idlePixels": 3319,
+    "attackPixels": [
+      3795,
+      3795,
+      3795,
+      3795
+    ]
+  },
+  {
+    "id": 73,
+    "name": "Tentacruel",
+    "idlePixels": 4355,
+    "attackPixels": [
+      5123,
+      5123,
+      5123,
+      5123
+    ]
+  },
+  {
+    "id": 74,
+    "name": "Geodude",
+    "idlePixels": 1160,
+    "attackPixels": [
+      1532,
+      1532,
+      1532,
+      1618
+    ]
+  },
+  {
+    "id": 75,
+    "name": "Graveler",
+    "idlePixels": 599,
+    "attackPixels": [
+      1505,
+      1505,
+      1505,
+      1673
+    ]
+  },
+  {
+    "id": 76,
+    "name": "Golem",
+    "idlePixels": 860,
+    "attackPixels": [
+      2745,
+      2745,
+      2745,
+      2654
+    ]
+  },
+  {
+    "id": 77,
+    "name": "Ponyta",
+    "idlePixels": 2356,
+    "attackPixels": [
+      3007,
+      3007,
+      921,
+      3007
+    ]
+  },
+  {
+    "id": 78,
+    "name": "Rapidash",
+    "idlePixels": 2475,
+    "attackPixels": [
+      2877,
+      2877,
+      998,
+      2877
+    ]
+  },
+  {
+    "id": 79,
+    "name": "Slowpoke",
+    "idlePixels": 2062,
+    "attackPixels": [
+      2520,
+      2520,
+      2520,
+      2520
+    ]
+  },
+  {
+    "id": 80,
+    "name": "Slowbro",
+    "idlePixels": 2463,
+    "attackPixels": [
+      3303,
+      3303,
+      3303,
+      1035
+    ]
+  },
+  {
+    "id": 81,
+    "name": "Magnemite",
+    "idlePixels": 3598,
+    "attackPixels": [
+      3114,
+      2949,
+      2390,
+      3114
+    ]
+  },
+  {
+    "id": 82,
+    "name": "Magneton",
+    "idlePixels": 4066,
+    "attackPixels": [
+      5500,
+      5500,
+      3118,
+      5463
+    ]
+  },
+  {
+    "id": 83,
+    "name": "Farfetch’d",
+    "idlePixels": 1944,
+    "attackPixels": [
+      2714,
+      2714,
+      1312,
+      2714
+    ]
+  },
+  {
+    "id": 84,
+    "name": "Doduo",
+    "idlePixels": 2158,
+    "attackPixels": [
+      2768,
+      2777,
+      1298,
+      2768
+    ]
+  },
+  {
+    "id": 85,
+    "name": "Dodrio",
+    "idlePixels": 2131,
+    "attackPixels": [
+      2988,
+      2988,
+      1488,
+      2910
+    ]
+  },
+  {
+    "id": 86,
+    "name": "Seel",
+    "idlePixels": 2005,
+    "attackPixels": [
+      2460,
+      2460,
+      2460,
+      2434
+    ]
+  },
+  {
+    "id": 87,
+    "name": "Dewgong",
+    "idlePixels": 1935,
+    "attackPixels": [
+      2305,
+      2305,
+      2305,
+      2305
+    ]
+  },
+  {
+    "id": 88,
+    "name": "Grimer",
+    "idlePixels": 1864,
+    "attackPixels": [
+      2970,
+      2970,
+      2970,
+      3035
+    ]
+  },
+  {
+    "id": 89,
+    "name": "Muk",
+    "idlePixels": 1590,
+    "attackPixels": [
+      2692,
+      2692,
+      2692,
+      2692
+    ]
+  },
+  {
+    "id": 90,
+    "name": "Shellder",
+    "idlePixels": 1453,
+    "attackPixels": [
+      2578,
+      2578,
+      2344,
+      2578
+    ]
+  },
+  {
+    "id": 91,
+    "name": "Cloyster",
+    "idlePixels": 1387,
+    "attackPixels": [
+      2752,
+      2752,
+      2752,
+      2974
+    ]
+  },
+  {
+    "id": 92,
+    "name": "Gastly",
+    "idlePixels": 4570,
+    "attackPixels": [
+      3767,
+      3767,
+      1209,
+      3767
+    ]
+  },
+  {
+    "id": 93,
+    "name": "Haunter",
+    "idlePixels": 2640,
+    "attackPixels": [
+      2835,
+      2835,
+      1805,
+      2835
+    ]
+  },
+  {
+    "id": 94,
+    "name": "Gengar",
+    "idlePixels": 2483,
+    "attackPixels": [
+      3642,
+      3642,
+      2436,
+      3642
+    ]
+  },
+  {
+    "id": 95,
+    "name": "Onix",
+    "idlePixels": 1755,
+    "attackPixels": [
+      2134,
+      2134,
+      2155,
+      2155
+    ]
+  },
+  {
+    "id": 96,
+    "name": "Drowzee",
+    "idlePixels": 907,
+    "attackPixels": [
+      1308,
+      1308,
+      820,
+      1308
+    ]
+  },
+  {
+    "id": 97,
+    "name": "Hypno",
+    "idlePixels": 1150,
+    "attackPixels": [
+      1271,
+      1271,
+      878,
+      1271
+    ]
+  },
+  {
+    "id": 98,
+    "name": "Krabby",
+    "idlePixels": 1067,
+    "attackPixels": [
+      1976,
+      1976,
+      2002,
+      2002
+    ]
+  },
+  {
+    "id": 99,
+    "name": "Kingler",
+    "idlePixels": 1146,
+    "attackPixels": [
+      2698,
+      2698,
+      2714,
+      2698
+    ]
+  },
+  {
+    "id": 100,
+    "name": "Voltorb",
+    "idlePixels": 2625,
+    "attackPixels": [
+      4346,
+      4346,
+      3427,
+      4346
+    ]
+  },
+  {
+    "id": 101,
+    "name": "Electrode",
+    "idlePixels": 2904,
+    "attackPixels": [
+      4738,
+      4738,
+      3573,
+      5267
+    ]
+  },
+  {
+    "id": 102,
+    "name": "Exeggcute",
+    "idlePixels": 2100,
+    "attackPixels": [
+      3864,
+      3864,
+      3949,
+      1439
+    ]
+  },
+  {
+    "id": 103,
+    "name": "Exeggutor",
+    "idlePixels": 1808,
+    "attackPixels": [
+      2911,
+      2911,
+      2911,
+      1423
+    ]
+  },
+  {
+    "id": 104,
+    "name": "Cubone",
+    "idlePixels": 1709,
+    "attackPixels": [
+      2182,
+      2278,
+      2182,
+      2278
+    ]
+  },
+  {
+    "id": 105,
+    "name": "Marowak",
+    "idlePixels": 1632,
+    "attackPixels": [
+      2137,
+      2156,
+      2137,
+      2156
+    ]
+  },
+  {
+    "id": 106,
+    "name": "Hitmonlee",
+    "idlePixels": 1321,
+    "attackPixels": [
+      2790,
+      2790,
+      2790,
+      2790
+    ]
+  },
+  {
+    "id": 107,
+    "name": "Hitmonchan",
+    "idlePixels": 2139,
+    "attackPixels": [
+      2135,
+      2135,
+      2275,
+      2135
+    ]
+  },
+  {
+    "id": 108,
+    "name": "Lickitung",
+    "idlePixels": 1035,
+    "attackPixels": [
+      1190,
+      1190,
+      1272,
+      1272
+    ]
+  },
+  {
+    "id": 109,
+    "name": "Koffing",
+    "idlePixels": 1903,
+    "attackPixels": [
+      2941,
+      2941,
+      2941,
+      2941
+    ]
+  },
+  {
+    "id": 110,
+    "name": "Weezing",
+    "idlePixels": 1904,
+    "attackPixels": [
+      2742,
+      2742,
+      2742,
+      2742
+    ]
+  },
+  {
+    "id": 111,
+    "name": "Rhyhorn",
+    "idlePixels": 1043,
+    "attackPixels": [
+      2985,
+      2985,
+      2985,
+      3115
+    ]
+  },
+  {
+    "id": 112,
+    "name": "Rhydon",
+    "idlePixels": 796,
+    "attackPixels": [
+      2358,
+      2358,
+      2358,
+      2308
+    ]
+  },
+  {
+    "id": 113,
+    "name": "Chansey",
+    "idlePixels": 788,
+    "attackPixels": [
+      1564,
+      1514,
+      711,
+      1514
+    ]
+  },
+  {
+    "id": 114,
+    "name": "Tangela",
+    "idlePixels": 2891,
+    "attackPixels": [
+      5221,
+      5221,
+      1340,
+      5669
+    ]
+  },
+  {
+    "id": 115,
+    "name": "Kangaskhan",
+    "idlePixels": 414,
+    "attackPixels": [
+      1066,
+      1066,
+      1109,
+      1109
+    ]
+  },
+  {
+    "id": 116,
+    "name": "Horsea",
+    "idlePixels": 965,
+    "attackPixels": [
+      1530,
+      1530,
+      172,
+      1530
+    ]
+  },
+  {
+    "id": 117,
+    "name": "Seadra",
+    "idlePixels": 1003,
+    "attackPixels": [
+      1494,
+      1494,
+      153,
+      1494
+    ]
+  },
+  {
+    "id": 118,
+    "name": "Goldeen",
+    "idlePixels": 1401,
+    "attackPixels": [
+      2001,
+      1948,
+      215,
+      1948
+    ]
+  },
+  {
+    "id": 119,
+    "name": "Seaking",
+    "idlePixels": 1315,
+    "attackPixels": [
+      2151,
+      2048,
+      222,
+      2048
+    ]
+  },
+  {
+    "id": 120,
+    "name": "Staryu",
+    "idlePixels": 3095,
+    "attackPixels": [
+      4533,
+      4533,
+      235,
+      4533
+    ]
+  },
+  {
+    "id": 121,
+    "name": "Starmie",
+    "idlePixels": 3968,
+    "attackPixels": [
+      5031,
+      5031,
+      5031,
+      209
+    ]
+  },
+  {
+    "id": 122,
+    "name": "Mr. Mime",
+    "idlePixels": 1389,
+    "attackPixels": [
+      1673,
+      1673,
+      1451,
+      1673
+    ]
+  },
+  {
+    "id": 123,
+    "name": "Scyther",
+    "idlePixels": 770,
+    "attackPixels": [
+      1995,
+      1973,
+      912,
+      1995
+    ]
+  },
+  {
+    "id": 124,
+    "name": "Jynx",
+    "idlePixels": 1680,
+    "attackPixels": [
+      2661,
+      2661,
+      2762,
+      2661
+    ]
+  },
+  {
+    "id": 125,
+    "name": "Electabuzz",
+    "idlePixels": 988,
+    "attackPixels": [
+      1793,
+      1793,
+      1172,
+      1793
+    ]
+  },
+  {
+    "id": 126,
+    "name": "Magmar",
+    "idlePixels": 904,
+    "attackPixels": [
+      1175,
+      1175,
+      89,
+      1175
+    ]
+  },
+  {
+    "id": 127,
+    "name": "Pinsir",
+    "idlePixels": 1038,
+    "attackPixels": [
+      2084,
+      1563,
+      2146,
+      2146
+    ]
+  },
+  {
+    "id": 128,
+    "name": "Tauros",
+    "idlePixels": 1452,
+    "attackPixels": [
+      2606,
+      2606,
+      2706,
+      2706
+    ]
+  },
+  {
+    "id": 129,
+    "name": "Magikarp",
+    "idlePixels": 1984,
+    "attackPixels": [
+      3581,
+      172
+    ]
+  },
+  {
+    "id": 130,
+    "name": "Gyarados",
+    "idlePixels": 1928,
+    "attackPixels": [
+      2819,
+      2819,
+      2044,
+      2819
+    ]
+  },
+  {
+    "id": 131,
+    "name": "Lapras",
+    "idlePixels": 737,
+    "attackPixels": [
+      1348,
+      1348,
+      1348,
+      725
+    ]
+  },
+  {
+    "id": 132,
+    "name": "Ditto",
+    "idlePixels": 1985,
+    "attackPixels": [
+      3322
+    ]
+  },
+  {
+    "id": 133,
+    "name": "Eevee",
+    "idlePixels": 2159,
+    "attackPixels": [
+      3104,
+      3104,
+      3104,
+      3104
+    ]
+  },
+  {
+    "id": 134,
+    "name": "Vaporeon",
+    "idlePixels": 1026,
+    "attackPixels": [
+      1213,
+      1213,
+      1213,
+      1213
+    ]
+  },
+  {
+    "id": 135,
+    "name": "Jolteon",
+    "idlePixels": 1494,
+    "attackPixels": [
+      2333,
+      2333,
+      443,
+      2333
+    ]
+  },
+  {
+    "id": 136,
+    "name": "Flareon",
+    "idlePixels": 2468,
+    "attackPixels": [
+      3031,
+      3031,
+      3031,
+      3251
+    ]
+  },
+  {
+    "id": 137,
+    "name": "Porygon",
+    "idlePixels": 1381,
+    "attackPixels": [
+      1870,
+      1870,
+      263,
+      1847
+    ]
+  },
+  {
+    "id": 138,
+    "name": "Omanyte",
+    "idlePixels": 2676,
+    "attackPixels": [
+      3348,
+      3348,
+      2716,
+      3348
+    ]
+  },
+  {
+    "id": 139,
+    "name": "Omastar",
+    "idlePixels": 3057,
+    "attackPixels": [
+      3793,
+      3793,
+      3141,
+      3793
+    ]
+  },
+  {
+    "id": 140,
+    "name": "Kabuto",
+    "idlePixels": 1265,
+    "attackPixels": [
+      2312,
+      2312,
+      2312,
+      2468
+    ]
+  },
+  {
+    "id": 141,
+    "name": "Kabutops",
+    "idlePixels": 974,
+    "attackPixels": [
+      1397,
+      1397,
+      1397,
+      1397
+    ]
+  },
+  {
+    "id": 142,
+    "name": "Aerodactyl",
+    "idlePixels": 1999,
+    "attackPixels": [
+      1389,
+      1389,
+      959,
+      1389
+    ]
+  },
+  {
+    "id": 143,
+    "name": "Snorlax",
+    "idlePixels": 1190,
+    "attackPixels": [
+      3625,
+      3625,
+      3999,
+      3999
+    ]
+  },
+  {
+    "id": 144,
+    "name": "Articuno",
+    "idlePixels": 1252,
+    "attackPixels": [
+      1192,
+      1192,
+      1192,
+      600
+    ]
+  },
+  {
+    "id": 145,
+    "name": "Zapdos",
+    "idlePixels": 1224,
+    "attackPixels": [
+      1217,
+      1217,
+      1217,
+      739
+    ]
+  },
+  {
+    "id": 146,
+    "name": "Moltres",
+    "idlePixels": 1432,
+    "attackPixels": [
+      1258,
+      1258,
+      1258,
+      725
+    ]
+  },
+  {
+    "id": 147,
+    "name": "Dratini",
+    "idlePixels": 2368,
+    "attackPixels": [
+      4057,
+      4057,
+      1836,
+      4057
+    ]
+  },
+  {
+    "id": 148,
+    "name": "Dragonair",
+    "idlePixels": 1750,
+    "attackPixels": [
+      2293,
+      2293,
+      1504,
+      2293
+    ]
+  },
+  {
+    "id": 149,
+    "name": "Dragonite",
+    "idlePixels": 845,
+    "attackPixels": [
+      1526,
+      1526,
+      460,
+      1526
+    ]
+  },
+  {
+    "id": 150,
+    "name": "Mewtwo",
+    "idlePixels": 1883,
+    "attackPixels": [
+      2267,
+      2267,
+      991,
+      2267
+    ]
+  },
+  {
+    "id": 151,
+    "name": "Mew",
+    "idlePixels": 5842,
+    "attackPixels": [
+      6014,
+      6014,
+      6014,
+      6014
+    ]
+  }
+]
