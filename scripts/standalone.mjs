@@ -1,9 +1,11 @@
 // Package Vite's built scene and both GLBs into one locally openable HTML file.
 import {readFileSync as read,writeFileSync as write} from 'node:fs';
+// Vite prepends the public base path to asset URLs, not to files on disk.
+const assetFile=name=>'dist/assets/'+name;
 let html=read('dist/index.html','utf8');
-html=html.replace(/<link rel="stylesheet" crossorigin href="(\/assets\/[^"]+)">/,(_,path)=>'<style>'+read('dist'+path,'utf8')+'</style>')
-.replace(/<script type="module" crossorigin src="(\/assets\/[^"]+)"><\/script>/,(_,path)=>{
- const js=read('dist'+path,'utf8').replace(/"\/assets\/([^"]+\.(glb|webp))"/g,(_,file,ext)=>JSON.stringify('data:'+(ext==='glb'?'model/gltf-binary':'image/webp')+';base64,'+read('dist/assets/'+file).toString('base64')));
+html=html.replace(/<link rel="stylesheet" crossorigin href="[^"]*\/assets\/([^"/]+)">/,(_,path)=>'<style>'+read(assetFile(path),'utf8')+'</style>')
+.replace(/<script type="module" crossorigin src="[^"]*\/assets\/([^"/]+)"><\/script>/,(_,path)=>{
+ const js=read(assetFile(path),'utf8').replace(/"[^"\n]*\/assets\/([^"/]+\.(glb|webp))"/g,(_,file,ext)=>JSON.stringify('data:'+(ext==='glb'?'model/gltf-binary':'image/webp')+';base64,'+read(assetFile(file)).toString('base64')));
  return '<script type="module">'+js.replace(/<\/script/gi,'<\\/script')+'</script>';
 });
 const credits=read('public/credits.html','utf8').split('<h1>')[1].replace('</html>','');

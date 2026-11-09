@@ -1,5 +1,7 @@
 # Pokémon Battle Field
 
+[Play Pokémon Battle Field on GitHub Pages](https://perryong.github.io/pokemon_battle_field/)
+
 Build a party of one to six of the 151 original species and battle an equally sized rival party in a three-dimensional Kanto stadium. The app uses Generation I Red, Blue and Yellow learnsets and the Pokémon Showdown RBY battle simulator.
 
 After running `npm ci` and `npm run build`, open `dist/pokemon-battle-field.html` in a browser with WebGL 2. This edition includes its models, move effects and battle engine and works offline.
@@ -23,3 +25,5 @@ npm run preview
 ```
 
 `npm run build` produces a static site and a self-contained HTML file. Browser checks under `qa/` run against a local production server with `BASE_URL` and a Chromium executable set via `CHROME_PATH`. The UI tests exercise learnset selection, preview playback, equipping and fighting in desktop and offline phone-sized views. Sources and licenses are listed in CREDITS.md and refs/SOURCES.md.
+
+Pushes to `main` run the tests, build the game, and deploy it to GitHub Pages through the Pages workflow.
