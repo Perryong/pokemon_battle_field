@@ -1,5 +1,6 @@
 import './style.css';
 import {buildScene} from './scene.js';
+import {setupFriendLobby} from './friend-lobby.js';
 import {setupDex} from './dex.js';
 import {lookup, dexNumber, typeColors} from './roster.js';
 import {portrait} from './thumbs.js';
@@ -12,6 +13,7 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const storage = (() => { try { return window.localStorage; } catch { return null; } })();
 let team = loadParties(storage);
 let match = createBattle(team), state = match.view(), sequence, exhibition;
+let exhibitionRate = Number($('replayRate').value);
 let mode = 'play', paused = reduced, ready = false, arena, gameTime = 0, showTime = 0;
 let last = performance.now(), stamp = '', note = lookup(team[0][0].id).name + ' is ready.';
 let log = [];
@@ -29,6 +31,7 @@ function rematch() {
 }
 
 function apply(newTeams) {
+  if (friends.current) return;
   team = newTeams;
   saveParties(storage,team);
   showTime = gameTime = 0;
@@ -36,6 +39,33 @@ function apply(newTeams) {
 }
 
 const dex = setupDex({team:() => team, apply});
+const friends = setupFriendLobby({
+  getTeam:()=>team[0],
+  editTeam:()=>{
+    dex.open(team[0][0].id);
+    $('partyBattle').textContent='Save team';
+    $('rivalEditor').hidden=true;
+  },
+  onStart(view) {
+    if ($('dex').open) $('dex').close();
+    mode='play';state=view;sequence=null;log=[];
+    $('turnLog').replaceChildren();note='Both trainers are ready.';refresh(true);
+  },
+  onTurn(view,events) {
+    const segments=playEvents(events,state,view);
+    log.push(...events.map(event=>'Turn '+state.round+' · '+event.text));
+    state=view;
+    if (sequence) sequence.segments.push(...segments);
+    else if (segments.length) sequence={segments,index:0,elapsed:0};
+    refresh(true);
+  },
+  onExit(){ mode='play';rematch(); },
+  onChange(){ refresh(true); },
+});
+$('dex').addEventListener('close',()=>{
+  $('partyBattle').textContent='Start team battle';
+  $('rivalEditor').hidden=false;
+});
 $('buildTeam').onclick=()=>dex.open(team[0][0].id);
 $('pickPlayer').onclick=()=>{const f=currentFrame();dex.open(f.playerBaseId,0,f.playerSlot);};
 $('pickRival').onclick=()=>dex.open(currentFrame().rivalBaseId,1);
@@ -46,6 +76,7 @@ function choose(slot) {
 }
 function act(command) {
   if (!ready || mode!=='play' || sequence || state.winner) return;
+  if (friends.current) { friends.current.submit(command);return; }
   const segments=[];
   do {
     const before=state;
@@ -93,6 +124,7 @@ function resultText(winner) {
 }
 
 function useMode(next) {
+  if (friends.current) return;
   mode = next;
   if (next === 'show' && !exhibition) exhibition = buildExhibition(team);
   refresh(true);
@@ -125,7 +157,7 @@ function renderChoices() {
     button.lastChild.textContent = detail;
     button.title = detail;
     button.style.setProperty('--move', colorFor(move?.type));
-    button.disabled = !ready || !!sequence || !!state.winner || choice.disabled;
+    button.disabled = !ready || !!sequence || !!state.winner || choice.disabled || onlineLocked();
     const next = $('moves').children[index];
     if (next !== button) $('moves').insertBefore(button, next || null);
   }
@@ -151,10 +183,15 @@ function renderParty() {
     icon.className='portrait';portrait(icon,p.id);words.append(document.createElement('strong'),document.createElement('small'));
     words.firstChild.textContent=lookup(p.id).name;
     words.lastChild.textContent=[p.hp+'/'+p.maxHP+' HP',p.hp===0?'Fainted':p.active?'Active':'',statusText[p.status]].filter(Boolean).join(' · ');
-    button.dataset.switchSlot=p.slot;button.append(icon,words);button.disabled=!ready||!!sequence||!p.canSwitch||!!state.winner;
+    button.dataset.switchSlot=p.slot;button.append(icon,words);button.disabled=!ready||!!sequence||!p.canSwitch||!!state.winner||onlineLocked();
     button.onclick=()=>act({switch:p.slot});return button;
   }));
   if (focus!=null) $('switchChoices').querySelector('[data-switch-slot="'+focus+'"]:enabled')?.focus({preventScroll:true});
+}
+
+function onlineLocked() {
+  const room=friends.current;
+  return Boolean(room && (room.closed || room.locked));
 }
 
 function refresh(force=false) {
@@ -167,7 +204,9 @@ function refresh(force=false) {
   $('show').setAttribute('aria-pressed',show);
   $('livepanel').hidden = show; $('showpanel').hidden = !show;
   $('history').hidden = show || !$('turnLog').children.length;
-  $('again').hidden = show || !!sequence || !state.winner;
+  const room=friends.current;
+  for (const id of ['show','openDex','buildTeam','pickPlayer','pickRival']) $(id).disabled=Boolean(room);
+  $('again').hidden = Boolean(room) || show || !!sequence || !state.winner;
   for (const [index,prefix,side] of [[0,'p','player'],[1,'c','rival']]) {
     const original = lookup(f[side+'BaseId']);
     const form = lookup(f[side+'SpeciesId']) || original;
@@ -186,9 +225,18 @@ function refresh(force=false) {
   if (!show) {
     renderChoices();
     renderParty();
-    const intent=state.winner || sequence ? null : pickAction(state,'rival');
-    $('intel').textContent = state.winner ? 'Match complete.' : sequence ? 'Resolving turn…' :
-      !intent ? 'The rival is waiting.' : intent.switch!=null ? 'Rival intent · Send '+lookup(state.rivalParty[intent.switch].id).name : 'Rival intent · '+intent.name;
+    if (room) {
+      $('decklabel').textContent='FRIEND BATTLE';
+      $('intel').textContent = room.closed ? friends.status : state.winner ? 'Match complete.' :
+        sequence ? 'Resolving turn…' : state.playerRequest==='wait' ? 'Your friend is choosing a replacement.' :
+        room.locked ? 'Choice locked. Waiting for your friend.' : 'Choose privately. Both trainers lock in before the turn resolves.';
+      if (room.closed && !state.winner) $('prompt').textContent='Connection closed.';
+      else if (!sequence && !state.winner && room.locked) $('prompt').textContent='Waiting for your friend.';
+    } else {
+      const intent=state.winner || sequence ? null : pickAction(state,'rival');
+      $('intel').textContent = state.winner ? 'Match complete.' : sequence ? 'Resolving turn…' :
+        !intent ? 'The rival is waiting.' : intent.switch!=null ? 'Rival intent · Send '+lookup(state.rivalParty[intent.switch].id).name : 'Rival intent · '+intent.name;
+    }
   }
   if ($('message').textContent !== f.caption) $('message').textContent = f.caption;
   $('pause').textContent = paused?'Play':'Pause';
@@ -204,10 +252,10 @@ function draw() {
 }
 
 function animate(now) {
-  const dt = Math.min(.12,(now-last)/1000); last=now;
+  const elapsed = Math.max(0,(now-last)/1000); last=now;
   if (!$('dex').open) {
-    if (mode === 'play') advance(dt);
-    else if (!paused) showTime=(showTime+dt)%SHOW_LENGTH;
+    if (mode === 'play') advance(Math.min(.12,elapsed));
+    else if (!paused && !document.hidden) showTime=(showTime+elapsed*exhibitionRate)%SHOW_LENGTH;
     draw();
   }
   requestAnimationFrame(animate);
@@ -217,7 +265,9 @@ $('play').onclick = () => useMode('play');
 $('show').onclick = () => useMode('show');
 $('focus').onclick = () => arena?.focus();
 $('reset').onclick = () => arena?.reset();
-$('pause').onclick = () => { paused=!paused; refresh(true); };
+document.addEventListener('visibilitychange', () => { last=performance.now(); });
+$('replayRate').onchange = () => { exhibitionRate=Number($('replayRate').value); last=performance.now(); };
+$('pause').onclick = () => { last=performance.now(); paused=!paused; refresh(true); };
 $('seek').oninput = e => { showTime=Number(e.target.value); paused=true; refresh(true); };
 $('again').onclick = rematch;
 refresh(true);
@@ -231,7 +281,8 @@ buildScene($('field')).then(r => {
   if (url.searchParams.has('t') && Number.isFinite(Number(url.searchParams.get('t')))) window.__diorama.freeze(Number(url.searchParams.get('t')));
   else if (url.searchParams.get('mode')==='exhibition') useMode('show');
   const dexId=Number(url.searchParams.get('dex'));
-  if (Number.isInteger(dexId)&&lookup(dexId)) dex.open(dexId);
+  if (new URLSearchParams(location.hash.slice(1)).has('battle')) friends.openInvite();
+  else if (Number.isInteger(dexId)&&lookup(dexId)) dex.open(dexId);
   requestAnimationFrame(animate);
 }).catch(error => {
   $('loading').textContent='The 3D field could not load. Check that WebGL is enabled, then reload.';

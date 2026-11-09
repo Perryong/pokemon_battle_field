@@ -17,6 +17,12 @@ const licenses=[
  ['@pkmn/sets','src/lib/LICENSE.pkmn-sets'],
  ['@pkmn/streams','node_modules/@pkmn/streams/LICENSE'],
  ['ts-chacha20','node_modules/ts-chacha20/LICENSE'],
+ ['PeerJS','node_modules/peerjs/LICENSE'],
+ ['peerjs-js-binarypack','node_modules/peerjs-js-binarypack/LICENSE'],
+ ['@msgpack/msgpack','node_modules/@msgpack/msgpack/LICENSE'],
+ ['EventEmitter3','node_modules/eventemitter3/LICENSE'],
+ ['WebRTC Adapter','node_modules/webrtc-adapter/LICENSE.md'],
+ ['sdp','node_modules/sdp/LICENSE'],
 ];
 const license=licenses.map(([name,file])=>name+'\n'+read(file,'utf8')).join('\n\n');
 write('dist/LICENSES.txt',license);
