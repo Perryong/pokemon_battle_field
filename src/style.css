@@ -31,3 +31,28 @@
 #friendLobby{width:min(430px,94vw);padding:0}#friendLobby .dex-head h2{font-size:27px}.friend-body{padding:16px 20px}.friend-body p{margin:3px 0 16px;font-size:14px}.friend-body .party-heading button,.friend-body #friendLeave{background:#e1eadb;color:var(--ink)}#friendShare{margin:12px 0}#friendShare label{font-size:12px}#friendShare>div{display:flex;gap:5px}#friendLink{width:100%;min-width:0;border:1px solid var(--line);padding:6px;font-size:12px;border-radius:4px}.friend-body button:disabled{opacity:.5}.replay-rate{display:flex;align-items:center;gap:3px}.replay-rate select{background:var(--cream);color:var(--ink);border:1px solid var(--line);border-radius:3px}
 
 .command-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}.command-heading .replay-rate{font-size:12px;color:var(--ink)}
+
+.format-field{display:inline-flex;align-items:center;gap:6px;font:12px system-ui;color:var(--ink)}
+.format-field select,.strategy-card select{color:var(--ink);background:#fffef6;border:1px solid #aebfa9;border-radius:4px;padding:5px 7px}
+.format-problem{margin:7px 0;color:#883e28;font:600 12px/1.4 system-ui}
+#friendLobby .format-field{margin-bottom:10px}
+.strategy-card{border:1px solid #bdcfbd;border-left:3px solid #548168;border-radius:5px;background:#f1f6eb;padding:9px;margin:8px 0}
+.strategy-card label{font-weight:700;font-size:13px}.strategy-card a{font-size:11px;color:#326449}
+.strategy-card select{width:100%;margin-top:6px}.strategy-card p{font-size:12px;line-height:1.4;margin:6px 0}
+.strategy-loadout{display:flex;align-items:center;justify-content:space-between;gap:7px}
+.strategy-loadout span{font-size:11px}.strategy-loadout button{white-space:nowrap;font-size:12px}
+.console .fighter{padding:8px 0;gap:7px}.console .mon strong{font-size:17px;margin:1px 0 5px}
+.fighter .hp-readout{display:grid;justify-items:end;min-width:3ch}.hp-readout b{font:700 14px monospace}.hp-readout small{font:10px monospace;color:var(--dim)}
+.status-tag{display:inline-block;font:700 10px monospace;padding:1px 4px;border-radius:3px;background:#f4dc95;color:#5c4318}
+.status-tag[data-status=brn]{background:#ffd1b9}.status-tag[data-status=psn],.status-tag[data-status=tox]{background:#e6cfef}.status-tag[data-status=frz]{background:#c8eaf1}
+.meter i[data-health=mid]{background:#b1892f}.meter i[data-health=low]{background:#b24f43}
+.console .command{padding:11px 14px}.command h3{font-size:21px;margin:4px 0 7px}
+.console .moves{gap:4px;margin:5px 0}.moves button{min-height:43px;padding:5px 8px}
+.console .switch-panel{margin-top:7px;padding-top:6px}#switchChoices{gap:3px}#switchChoices button{padding:3px 5px}
+.console .message{font-size:11px;line-height:1.35;margin-top:7px;padding:6px 8px}
+.battle-history summary small{font:10px monospace;color:var(--dim)}
+#turnLog{list-style:none;padding:0;margin:3px 0;max-height:8rem;overflow:auto}
+#turnLog li{border-top:1px solid var(--line);margin:0;padding:4px 2px;font-size:11px}
+@media(min-width:681px){.layout{grid-template-columns:minmax(0,1fr) minmax(300px,340px)}}
+
+#ouRules{margin:5px 0;font-size:12px}#ouRules summary{cursor:pointer}#ouRules p{margin:4px 0;line-height:1.45}#ouRules a{color:#326449}

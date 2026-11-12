@@ -1,4 +1,6 @@
 import {lookup, roster} from './roster.js';
+import {CASUAL,OU,partyProblem} from './formats.js';
+import {strategySets} from './strategy.js';
 import {validateLoadout} from './gen1-data.js';
 
 const storageKey = 'pokemon-battle-field.team.v1';
@@ -31,17 +33,28 @@ const isMember = member => Number.isInteger(member?.id) && !!lookup(member.id) &
 const isParty = party => Array.isArray(party) && party.length > 0 &&
   party.length <= PARTY_LIMIT && party.every(isMember);
 
-export function generateRival(size, lead = null) {
+export function generateRival(size, lead = null, format = CASUAL) {
   if (!Number.isInteger(size) || size < 1 || size > PARTY_LIMIT) throw new RangeError('Choose one to six Pokémon.');
-  if (lead && !isMember(lead)) throw new RangeError('Choose a legal rival lead.');
+  if (lead) {
+    const problem=partyProblem([lead],format);
+    if (problem) throw new RangeError(problem);
+  }
   const rival = lead ? [{id:lead.id,moves:[...lead.moves]}] : [];
   const pool = roster.filter(mon => mon.id !== lead?.id);
+  const movesFor = mon => format===OU ? strategySets(mon).find(set=>set.tier==='ou')?.moves : mon.defaultMoves;
+  if (format===OU) {
+    // Use published OU sets as opposition and validate each draw against this format.
+    for (let i=pool.length-1;i>=0;i--) {
+      const mon=pool[i], moves=movesFor(mon);
+      if (!moves || partyProblem([{id:mon.id,moves}],format)) pool.splice(i,1);
+    }
+  }
   while (rival.length < size) {
     const represented = new Set(rival.flatMap(member=>lookup(member.id).types));
     const varied = pool.filter(mon => mon.types.some(type=>!represented.has(type)));
     const options = varied.length ? varied : pool;
     const mon = options[Math.floor(Math.random() * options.length)];
-    rival.push({id:mon.id,moves:[...mon.defaultMoves]});
+    rival.push({id:mon.id,moves:[...movesFor(mon)]});
     pool.splice(pool.indexOf(mon),1);
   }
   return rival;

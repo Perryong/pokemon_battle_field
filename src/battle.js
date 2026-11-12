@@ -3,8 +3,8 @@ import {createPartyMatch} from './gen1-battle.js';
 import {lookup} from './roster.js';
 
 export const SHOW_LENGTH = 45;
-export const createBattle = ([player,rival], seed) =>
-  createPartyMatch(Array.isArray(player)?player:[player],Array.isArray(rival)?rival:[rival],seed);
+export const createBattle = ([player,rival], seed, format) =>
+  createPartyMatch(Array.isArray(player)?player:[player],Array.isArray(rival)?rival:[rival],seed,format);
 
 export function damageMultiplier(move,types) {
   const chart = effectiveness(move.type,types);
@@ -98,10 +98,10 @@ export function idleFrame(view,t,caption) {
 
 // An exhibition plays an independent, seeded simulation. Store the resolved
 // events once so scrubbing cannot reroll a hit, critical, or secondary effect.
-export function buildExhibition(team) {
+export function buildExhibition(team,format) {
   const seed = team.flat().flatMap(config => [config.id,...config.moves])
     .reduce((value,id) => Math.imul(value,31) + id >>> 0,151);
-  const match = createBattle(team,seed);
+  const match = createBattle(team,seed,format);
   const initial = match.view(), segments = [];
   for (let n = 0; n < 24 && !match.view().winner && match.view().round <= 5; n++) {
     const before = match.view();

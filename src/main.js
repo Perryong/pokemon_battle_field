@@ -6,13 +6,18 @@ import {lookup, dexNumber, typeColors} from './roster.js';
 import {portrait} from './thumbs.js';
 import {moveById} from './gen1-data.js';
 import {loadParties, saveParties} from './team.js';
+import {CASUAL,OU,formatName,partyProblem} from './formats.js';
 import {createBattle, pickAction, eventFrame, idleFrame, playEvents, buildExhibition, damageMultiplier, SHOW_LENGTH} from './battle.js';
 
 const $ = id => document.getElementById(id);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const storage = (() => { try { return window.localStorage; } catch { return null; } })();
 let team = loadParties(storage);
-let match = createBattle(team), state = match.view(), sequence, exhibition;
+let format=CASUAL;
+try {
+  if (storage?.getItem('pbf.format')===OU && team.every(party=>!partyProblem(party,OU))) format=OU;
+} catch { /* Use the default when storage is unavailable. */ }
+let match = createBattle(team,undefined,format), state = match.view(), sequence, exhibition;
 let playbackRate = Number($('replayRate').value);
 let mode = 'play', paused = reduced, ready = false, arena, gameTime = 0, showTime = 0;
 let last = performance.now(), stamp = '', note = lookup(team[0][0].id).name + ' is ready.';
@@ -20,7 +25,7 @@ let log = [];
 const choiceCache = new Map();
 
 function rematch() {
-  match = createBattle(team);
+  match = createBattle(team,undefined,format);
   state = match.view();
   sequence = null;
   log = [];
@@ -30,19 +35,21 @@ function rematch() {
   refresh(true);
 }
 
-function apply(newTeams) {
+function apply(newTeams,newFormat) {
   if (friends.current) return;
-  team = newTeams;
+  team = newTeams;format=newFormat;
+  try { storage?.setItem('pbf.format',format); } catch { /* Session still works. */ }
   saveParties(storage,team);
   showTime = gameTime = 0;
   exhibition = null;mode='play';rematch();
 }
 
-const dex = setupDex({team:() => team, apply});
+const dex = setupDex({team:() => team, getFormat:()=>format, apply});
 const friends = setupFriendLobby({
   getTeam:()=>team[0],
-  editTeam:()=>{
-    dex.open(team[0][0].id);
+  getFormat:()=>format,
+  editTeam:roomFormat=>{
+    dex.open(team[0][0].id,0,0,roomFormat);
     $('partyBattle').textContent='Save team';
     $('rivalEditor').hidden=true;
   },
@@ -125,6 +132,8 @@ function advance(dt) {
   $('turnLog').replaceChildren(...log.map(text => {
     const line = document.createElement('li'); line.textContent = text; return line;
   }));
+  $('logCount').textContent=String(log.length);
+  if ($('history').open) $('turnLog').scrollTop=$('turnLog').scrollHeight;
   $('history').hidden = !log.length;
 }
 
@@ -136,7 +145,7 @@ function resultText(winner) {
 function useMode(next) {
   if (friends.current) return;
   mode = next;
-  if (next === 'show' && !exhibition) exhibition = buildExhibition(team);
+  if (next === 'show' && !exhibition) exhibition = buildExhibition(team,format);
   refresh(true);
 }
 
@@ -215,6 +224,7 @@ function refresh(force=false) {
   $('livepanel').hidden = show; $('showpanel').hidden = !show;
   $('history').hidden = show || !$('turnLog').children.length;
   const room=friends.current;
+  $('battleFormat').textContent=formatName(room?.format || format);
   for (const id of ['show','openDex','buildTeam','pickPlayer','pickRival']) $(id).disabled=Boolean(room);
   $('again').hidden = Boolean(room) || show || !!sequence || !state.winner;
   for (const [index,prefix,side] of [[0,'p','player'],[1,'c','rival']]) {
@@ -222,12 +232,17 @@ function refresh(force=false) {
     const form = lookup(f[side+'SpeciesId']) || original;
     $(prefix+'name').textContent = original.name + (form.id !== original.id ? ' → '+form.name : '');
     const status = statusText[f[side+'Status']];
-    $(prefix+'id').textContent = (index?'RIVAL':'YOU')+' / '+dexNumber(original.id)+(status?' · '+status:' · Lv. 100');
+    $(prefix+'id').textContent = (index?'RIVAL':'YOU')+' / '+dexNumber(original.id);
+    const badge=$(prefix+'status');
+    badge.textContent=status || '';badge.hidden=!status;badge.dataset.status=f[side+'Status'] || '';
     portrait($(prefix+'pic'),form.id);
     const hp = f[side+'HP'], max = f[side+'MaxHP'];
     $(prefix+'hp').textContent = hp;
     $(prefix+'hp').title = hp+' / '+max+' HP';
-    $(prefix+'bar').style.width = Math.max(0,Math.min(100,100*hp/max))+'%';
+    const percent=Math.ceil(100*hp/max);
+    $(prefix+'percent').textContent=percent+'%';
+    const bar=$(prefix+'bar');bar.style.width=percent+'%';
+    bar.dataset.health=percent<=20?'low':percent<=50?'mid':'high';
   }
   $('round').textContent = show?'45 S  /  LOOP':'TURN '+String(state.round).padStart(2,'0');
   $('decklabel').textContent = show?'EXHIBITION REEL':'TRAINER CONSOLE';

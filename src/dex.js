@@ -2,13 +2,15 @@ import {roster, lookup, dexNumber, typeColors} from './roster.js';
 import {moveById, sourceNote, validateLoadout} from './gen1-data.js';
 import {portrait} from './thumbs.js';
 import {PARTY_LIMIT, generateRival} from './team.js';
+import {OU,partyProblem} from './formats.js';
+import {strategySets,roleText,tierName,smogonPage} from './strategy.js';
 import {inspector} from './inspect.js';
 
 const $ = id => document.getElementById(id);
 const searchKey = text => text.normalize('NFD').replace(/\p{Diacritic}/gu,'')
   .replaceAll('♀','f').replaceAll('♂','m').toLowerCase().replace(/[^a-z0-9]/g,'');
 
-export function setupDex({team, apply}) {
+export function setupDex({team, getFormat, apply}) {
   const dialog = $('dex');
   let members = [], slot = 0, rivalMode = false;
   let selected = null, draft = [], legalMoves = [], studio;
@@ -35,6 +37,21 @@ export function setupDex({team, apply}) {
     }
   }
 
+  function effectiveParty() {
+    if (!rivalMode && selected.id===members[slot]?.id) {
+      return members.map((member,i)=>i===slot?{id:selected.id,moves:draft.filter(Boolean)}:member);
+    }
+    return members;
+  }
+
+  function showStrategy() {
+    const set=strategySets(selected)[Number($('strategySelect').value) || 0];
+    $('strategyRole').textContent=roleText(selected,set);
+    $('strategyMoves').textContent=set.moves.map(id=>moveById(id).name).join(' · ');
+    $('strategySource').href=smogonPage(selected);
+    $('strategySource').hidden=set.tier==='local';
+  }
+
   function validateDraft() {
     const ids = draft.filter(Boolean);
     const reason = !ids.length ? 'Equip at least one move.' : validateLoadout(selected, ids);
@@ -46,10 +63,20 @@ export function setupDex({team, apply}) {
     $('asPlayer').disabled ||= !members[slot] || (selected.id === members[slot].id && ids.join() === members[slot].moves.join());
     const editingMember=!rivalMode && members[slot]?.id===selected.id;
     const pending=editingMember && members[slot].moves.join()!==ids.join();
-    $('partyBattle').disabled=!!(pending && reason);
+    const format=$('dexFormat').value;
+    $('ouRules').hidden=format!==OU;
+    const problem=partyProblem(effectiveParty(),format);
+    $('formatProblems').textContent=problem;
+    $('formatProblems').hidden=!problem;
+    $('partyBattle').disabled=Boolean(problem);
+    const rivalIssue=partyProblem([{id:selected.id,moves:ids}],format) || partyProblem(members,format);
+    $('asRival').disabled ||= Boolean(rivalIssue);
+    $('asRival').title=rivalIssue;
+    $('equipSet').disabled=unavailable;
     $('partyHelp').textContent=pending
       ? reason || ('Starting saves these moves in slot '+(slot+1)+'.')
       : 'Slot 1 leads. Your rival will bring '+members.length+' Pokémon.';
+    if (!problem && !pending && format===OU) $('partyHelp').textContent='Team legal for RBY OU. Slot 1 leads.';
     $('previewMove').disabled = $('previewAttack').disabled = unavailable;
   }
 
@@ -99,6 +126,9 @@ export function setupDex({team, apply}) {
       fallback.append(new Option('Struggle',165));
       $('previewMove').replaceChildren(...legalMoves.map(move => new Option(move.name, move.id)),fallback);
       $('previewMove').value = draft.find(Boolean) || legalMoves[0].id;
+      $('strategySelect').replaceChildren(...strategySets(mon).map((set,i)=>
+        new Option(set.tier==='local'?set.name:tierName(set.tier)+' · '+set.name,i)));
+      showStrategy();
       renderSlots();
       showMoveInfo();
     }
@@ -162,15 +192,16 @@ export function setupDex({team, apply}) {
     renderParty();$('partyNotice').textContent=selected.name+' saved in slot '+(slot+1)+'.';
   }
   function start(rivalLead=null) {
-    if (!rivalLead && !rivalMode && members[slot].id===selected.id) {
-      const moves=draft.filter(Boolean);
-      if (validateLoadout(selected,moves)) return;
-      members[slot]={id:selected.id,moves};
-    }
-    const rival=generateRival(members.length,rivalLead);
-    apply([members,rival]);dialog.close();
+    const format=$('dexFormat').value;
+    const home=rivalLead ? members : effectiveParty();
+    const reason=partyProblem(home,format) || (rivalLead && partyProblem([rivalLead],format));
+    if (reason) { $('formatProblems').hidden=false;$('formatProblems').textContent=reason;return; }
+    apply([home,generateRival(home.length,rivalLead,format)],format);
+    dialog.close();
   }
-  function open(id, side = 0, preferredSlot = 0) {
+  function open(id, side = 0, preferredSlot = 0, lockedFormat=null) {
+    $('dexFormat').value=lockedFormat || getFormat();
+    $('dexFormat').disabled=Boolean(lockedFormat);
     members=team()[0].map(p=>({id:p.id,moves:[...p.moves]}));
     slot=Math.max(0,Math.min(preferredSlot,members.length-1));rivalMode=side===1;
     $('partyNotice').textContent='';
@@ -182,6 +213,17 @@ export function setupDex({team, apply}) {
     $('speciesList').querySelector('[aria-pressed=true]')?.scrollIntoView({block:'nearest'});
     $('dexSearch').focus({preventScroll:true});
   }
+  $('dexFormat').onchange=validateDraft;
+  $('strategySelect').onchange=showStrategy;
+  $('equipSet').onclick=()=>{
+    const set=strategySets(selected)[Number($('strategySelect').value)];
+    draft=[...set.moves];
+    while (draft.length<4) draft.push(null);
+    if (!rivalMode && members[slot].id===selected.id) members[slot]={id:selected.id,moves:[...set.moves]};
+    $('previewMove').value=set.moves[0];showMoveInfo();renderSlots();
+    $('partyNotice').textContent=members[slot].id===selected.id && !rivalMode ? 'Equipped '+set.name+' in slot '+(slot+1)+'.' :
+      'Equipped '+set.name+'. Add '+selected.name+' or save it to a slot.';
+  };
   $('dexSearch').oninput = $('dexType').onchange = list;
   $('trainerCompare').onchange = () => detail(selected.id);
   $('previewMove').onchange = () => { studio?.cancelPreview?.(); showMoveInfo(); };

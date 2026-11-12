@@ -1,31 +1,33 @@
 import {Peer} from 'peerjs';
+import {CASUAL,OU} from './formats.js';
 import {createPartyMatch} from './gen1-battle.js';
 import {friendEvents, friendView, legalCommand, wireCommand} from './friend-match.js';
 
 const protocol = 'pbf-rby-1';
 export const isRoomId = value => /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/.test(value || '');
-const endpoint = id => protocol + '-' + id;
+const endpoint = (id,format) => protocol + (format===OU?'-ou':'') + '-' + id;
 
 // Only the host runs the simulator. The guest holds its choice locally until
 // the host has locked its choice, even when the guest submits first.
 export class FriendRoom {
-  constructor({invite, party, onInvite, onStart, onTurn, onStatus, onEnd}) {
+  constructor({invite, party, format=CASUAL, onInvite, onStart, onTurn, onStatus, onEnd}) {
     this.callbacks = {onInvite,onStart,onTurn,onStatus,onEnd};
     this.party = structuredClone(party);
+    this.format=format;
     this.guest = Boolean(invite);
     this.id = invite || crypto.randomUUID();
     this.phase = 0;
     this.locked = false;
     this.released = false;
     this.closed = false;
-    this.peer = new Peer(this.guest ? undefined : endpoint(this.id));
+    this.peer = new Peer(this.guest ? undefined : endpoint(this.id,this.format));
     this.deadline('The connection service did not respond. Try again.');
     this.peer.on('open', () => {
       if (this.closed) return;
       clearTimeout(this.timer);
       if (this.guest) {
         this.deadline('Could not reach the host. Check that their battle tab is open, or ask for a new link.');
-        this.bind(this.peer.connect(endpoint(this.id), {reliable:true, metadata:{protocol}}));
+        this.bind(this.peer.connect(endpoint(this.id,this.format), {reliable:true, metadata:{protocol}}));
       } else {
         onInvite(this.id);
         onStatus('Invite ready. Keep this tab open while your friend joins.');
@@ -58,7 +60,7 @@ export class FriendRoom {
     this.conn = conn;
     conn.on('open', () => {
       if (this.closed) return;
-      if (this.guest) this.send({type:'join', protocol, party:this.party});
+      if (this.guest) this.send({type:'join', protocol, format:this.format, party:this.party});
       this.callbacks.onStatus('Connecting both teams…');
     });
     conn.on('data', packet => {
@@ -80,7 +82,8 @@ export class FriendRoom {
     if (packet.type === 'leave') return this.end('Your friend left the room.');
     if (!this.started) {
       if (!this.guest && packet.type === 'join' && packet.protocol === protocol) {
-        this.match = createPartyMatch(this.party,packet.party);
+        if ((packet.format || CASUAL)!==this.format) throw Error('Format mismatch');
+        this.match = createPartyMatch(this.party,packet.party,undefined,this.format);
         const view = this.match.view();
         this.send({type:'start',protocol,view:friendView(view,true)});
         this.start(friendView(view,false));

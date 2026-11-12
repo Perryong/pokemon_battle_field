@@ -1,7 +1,6 @@
 import {Battle, Dex, extractChannelMessages} from '@pkmn/sim';
 
-import {moveById,validateLoadout} from './gen1-data.js';
-import {lookup} from './roster.js';
+import {CASUAL,checkedTeam} from './formats.js';
 
 const dex=Dex.forGen(1);
 const sides=['player','rival'];
@@ -11,14 +10,6 @@ const sideOf=ref=>ref?.startsWith('p1')?'player':ref?.startsWith('p2')?'rival':n
 const monName=ref=>ref?.split(': ').slice(1).join(': ')||'';
 const effectName=s=>s?.replace(/^move: /,'')||'';
 
-function teamMember(speciesId,moveIds) {
-  const mon=lookup(speciesId);
-  if(!Number.isInteger(speciesId)||!mon)throw new RangeError(`Unknown RBY species ${speciesId}`);
-  const problem=validateLoadout(mon,moveIds);
-  if(problem)throw new RangeError(problem);
-  const names=moveIds.map(id=>moveById(id).name);
-  return {species:mon.name,moves:names,level:100,evs:{hp:252,atk:252,def:252,spa:252,spd:252,spe:252}};
-}
 function battleSeed(seed) {
   if(seed===undefined)return undefined;
   if(Number.isInteger(seed)&&seed>=0&&seed<=0xffffffff)return [0,0,seed>>>16,seed&0xffff];
@@ -145,10 +136,6 @@ function turnEvents(lines,before,after) {
   return events;
 }
 
-function team(party) {
-  if(!Array.isArray(party)||party.length<1||party.length>6)throw new RangeError('Choose one to six party members.');
-  return Array.from(party,member=>teamMember(member?.id,member?.moves));
-}
 function requestOf(side) {
   return side.battle.ended?'ended':side.requestState||'wait';
 }
@@ -177,10 +164,11 @@ function choiceFor(side,party,selection,key) {
 }
 
 /** A synchronous level-100 RBY singles match. Party slots keep their original order. */
-export function createPartyMatch(playerParty,rivalParty,seed) {
-  const battle=new Battle({formatid:'gen1customgame',seed:battleSeed(seed)});
-  battle.setPlayer('p1',{name:'Player',team:team(playerParty)});
-  battle.setPlayer('p2',{name:'Rival',team:team(rivalParty)});
+export function createPartyMatch(playerParty,rivalParty,seed,format=CASUAL) {
+  const player=checkedTeam(playerParty,format), rival=checkedTeam(rivalParty,format);
+  const battle=new Battle({formatid:format,seed:battleSeed(seed)});
+  battle.setPlayer('p1',{name:'Player',team:player});
+  battle.setPlayer('p2',{name:'Rival',team:rival});
   // Showdown swaps Pokémon positions on each switch; retain the original objects.
   const parties=battle.sides.map(side=>[...side.pokemon]);
   return {

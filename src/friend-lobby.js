@@ -1,19 +1,27 @@
 import {FriendRoom,isRoomId} from './friend-room.js';
+import {CASUAL,OU,partyProblem} from './formats.js';
 import {lookup} from './roster.js';
 const $ = id => document.getElementById(id);
 
-export function setupFriendLobby({getTeam,editTeam,onStart,onTurn,onExit,onChange}) {
+export function setupFriendLobby({getTeam,getFormat,editTeam,onStart,onTurn,onExit,onChange}) {
   const dialog = $('friendLobby');
-  const inviteParam = new URLSearchParams(location.hash.slice(1)).get('battle');
+  const params=new URLSearchParams(location.hash.slice(1));
+  const inviteParam=params.get('battle');
+  const inviteFormat=params.get('format') || CASUAL;
   let invite = inviteParam, room = null, editing = false, status = '';
 
   function update() {
     const busy = room && !room.closed;
     $('friendStatus').textContent = status;
     $('friendTeam').textContent = getTeam().map(member=>lookup(member.id).name).join(' · ');
-    $('friendEdit').disabled = Boolean(busy);
+    $('friendEdit').disabled = Boolean(busy || (invite!==null && ![CASUAL,OU].includes(inviteFormat)));
     $('friendConnect').hidden = Boolean(busy);
-    $('friendConnect').disabled = invite !== null && !isRoomId(invite);
+    const format=invite!==null ? inviteFormat : $('friendFormat').value;
+    const problem=partyProblem(getTeam(),format);
+    $('friendFormat').disabled=Boolean(busy || invite!==null);
+    $('friendProblems').textContent=problem;
+    $('friendProblems').hidden=!problem;
+    $('friendConnect').disabled = Boolean(problem || (invite !== null && !isRoomId(invite)));
     $('friendConnect').textContent = invite ? 'Join with my team' : 'Create invite';
     $('friendLeave').hidden = !room && invite === null;
     $('friendLeave').textContent = busy ? 'Leave room' : 'Back to solo battle';
@@ -22,6 +30,7 @@ export function setupFriendLobby({getTeam,editTeam,onStart,onTurn,onExit,onChang
   }
 
   function open() {
+    $('friendFormat').value=room?.format || (invite!==null ? inviteFormat : getFormat());
     if (!room) status = invite === null ? 'Create a link and send it to one friend. Keep both battle tabs open.' :
       isRoomId(invite) ? 'You have a battle invite. Choose your team and join when ready.' : 'This invite link is incomplete.';
     update();
@@ -50,12 +59,14 @@ export function setupFriendLobby({getTeam,editTeam,onStart,onTurn,onExit,onChang
     if (wasPlaying) onExit();
     status = invite ? 'Joining the host…' : 'Opening your room…';
     try {
+      const format=$('friendFormat').value;
+      if (partyProblem(getTeam(),format)) { update();return; }
       room = new FriendRoom({
-        invite,party:getTeam(),
+        invite,party:getTeam(),format,
         onInvite(id) {
           const url = new URL(location.protocol === 'file:' ?
             'https://perryong.github.io/pokemon_battle_field/' : location.href);
-          url.search='';url.hash='battle='+id;
+          url.search='';url.hash='battle='+id+(format===OU?'&format='+OU:'');
           room.shareUrl=url.href;$('friendLink').value=room.shareUrl;update();
         },
         onStatus(message) { status=message;update();onChange(); },
@@ -73,7 +84,8 @@ export function setupFriendLobby({getTeam,editTeam,onStart,onTurn,onExit,onChang
     update();
   };
 
-  $('friendEdit').onclick = () => { editing=true;dialog.close();editTeam(); };
+  $('friendFormat').onchange=update;
+  $('friendEdit').onclick = () => { editing=true;dialog.close();editTeam($('friendFormat').value); };
   $('dex').addEventListener('close', () => {
     if (editing) { editing=false;open(); }
   });
