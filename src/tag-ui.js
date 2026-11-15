@@ -3,7 +3,7 @@ import {createSoloTag} from './solo-tag.js';
 import {tagTeam,trainers} from './tag-match.js';
 import {isRoomId} from './friend-room.js';
 import {readTeams} from './team-library.js';
-import {lookup} from './roster.js';
+import {lookup,roster as kanto} from './roster.js';
 import {portrait} from './thumbs.js';
 
 const $=id=>document.getElementById(id);
@@ -28,10 +28,41 @@ export function setupTag({storage,getParty,leaveScene}) {
     const source=teams[Number($('tagTeam').value)]?.party || [];
     return [...$('tagRoster').querySelectorAll('input:checked')].map(input=>source[Number(input.value)]);
   }
+  const partnerSlots=[ $('tagPartnerLead'),$('tagPartnerFirst'),$('tagPartnerSecond') ];
+  let partnerPool=[];
+  function partnerSourceChanged() {
+    const source=$('tagPartnerSource').value,fromDex=source==='dex';
+    $('tagPartnerSlots').hidden=source==='auto';
+    if(source!=='auto'){
+      partnerPool=fromDex?kanto.map(mon=>({id:mon.id,moves:mon.defaultMoves})):teams[Number(source)].party;
+      partnerSlots.forEach((slot,i)=>{
+        const choices=partnerPool.map((member,index)=>{
+          const species=lookup(member.id).name;
+          const name=member.name?member.name+' ('+species+')':species;
+          return new Option(fromDex?species:(index+1)+'. '+name,index);
+        });
+        slot.replaceChildren(new Option(i===0?'Choose a lead':'None',''),...choices);
+        slot.value=!fromDex && i<partnerPool.length?String(i):'';
+      });
+    }
+    draft();
+  }
+  function partnerParty() {
+    if($('tagPartnerSource').value==='auto') return null;
+    return partnerSlots.filter(slot=>slot.value!=='').map(slot=>partnerPool[Number(slot.value)]);
+  }
   function draft() {
     const count=selectedParty().length;
     for(const input of $('tagRoster').querySelectorAll('input')) input.disabled=!input.checked && count>=3;
-    $('tagConnect').disabled=!count || (invite!==null && (!isRoomId(invite) ||
+    const solo=$('tagMode').value==='solo' && invite===null;
+    $('tagPartner').hidden=!solo;
+    const partner=solo?partnerParty():null;
+    let problem='';
+    if(partner && !partnerSlots[0].value) problem='Choose a lead for your teammate.';
+    else if(partner && $('tagPartnerSource').value!=='dex' && new Set(partner).size!==partner.length)
+      problem='Choose each team slot only once.';
+    $('tagPartnerProblem').textContent=problem;$('tagPartnerProblem').hidden=!problem;
+    $('tagConnect').disabled=!!problem || !count || (invite!==null && (!isRoomId(invite) ||
       !['versus','coop'].includes(params.get('mode')) || !['ally','foe'].includes(role) || (role==='foe' && params.get('mode')==='coop')));
     $('tagConnect').textContent=invite!==null?'Join as '+(role==='ally'?'teammate':'opponent') :
       $('tagMode').value==='solo'?'Start solo battle':'Create '+titles[$('tagMode').value].toLowerCase()+' room';
@@ -48,9 +79,11 @@ export function setupTag({storage,getParty,leaveScene}) {
     teams=[{name:'Current party',party:getParty()}];
     try {teams.push(...readTeams(storage));} catch { /* Current party still works. */ }
     $('tagTeam').replaceChildren(...teams.map((t,i)=>new Option(t.name,i)));
+    $('tagPartnerSource').replaceChildren(new Option('Generate automatically','auto'),new Option('Kanto Pokédex','dex'),
+      ...teams.map((t,i)=>new Option(t.name,i)));
     $('tagMode').disabled=invite!==null;if(invite!==null) $('tagMode').value=params.get('mode');
     $('tagLobbyStatus').textContent=invite!==null?'Review your party before joining.':'';
-    $('tagDraft').hidden=$('tagConnect').hidden=false;$('tagLinks').replaceChildren();roster();dialog.showModal();
+    $('tagDraft').hidden=$('tagConnect').hidden=false;$('tagLinks').replaceChildren();partnerSourceChanged();roster();dialog.showModal();
   }
   function inviteLink(r,side) {
     const url=new URL(location.protocol==='file:'?'https://perryong.github.io/pokemon_battle_field/':location.href);
@@ -141,6 +174,8 @@ export function setupTag({storage,getParty,leaveScene}) {
     }
   }
   $('tagOpen').onclick=open;$('tagMode').onchange=draft;$('tagTeam').onchange=roster;
+  $('tagPartnerSource').onchange=partnerSourceChanged;
+  for(const slot of partnerSlots) slot.onchange=draft;
   $('tagClose').onclick=$('tagExit').onclick=leave;
   dialog.addEventListener('cancel',e=>{e.preventDefault();leave();});
   $('tagConnect').onclick=()=>{
@@ -149,7 +184,7 @@ export function setupTag({storage,getParty,leaveScene}) {
       const party=selectedParty();tagTeam(party);
       const mode=$('tagMode').value;
       if(mode==='solo' && invite===null){
-        room=createSoloTag(party,state);state(room,[]);return;
+        room=createSoloTag(party,state,partnerParty());state(room,[]);return;
       }
       room=new TagRoom({mode,invite,role,party,onLobby:lobby,onState:state,onEnd:end});
       $('tagMode').disabled=$('tagDraft').hidden=$('tagConnect').hidden=true;
