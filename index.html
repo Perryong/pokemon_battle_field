@@ -27,13 +27,19 @@
 <div class="friend-body"><label class="format-field">Match <select id="tagMode"><option value="coop">Co-op vs. two computer trainers</option><option value="solo">Solo with a computer teammate</option><option value="versus">2v2 with four human trainers</option></select></label>
 <p>Each trainer fields one Pokémon and brings up to two reserves. Kanto tag uses Generation III doubles mechanics with RBY moves, no items, and no abilities.</p>
 <div id="tagDraft"><label class="format-field">Bring Pokémon from <select id="tagTeam"></select></label><fieldset><legend>Choose up to three. The first selected slot leads.</legend><div id="tagRoster"></div></fieldset>
-<fieldset id="tagPartner" hidden><legend>Computer teammate</legend>
-<label class="format-field">Party source <select id="tagPartnerSource"></select></label>
-<div id="tagPartnerSlots" hidden>
-<label class="format-field">Lead <select id="tagPartnerLead"></select></label>
-<label class="format-field">First reserve <select id="tagPartnerFirst"></select></label>
-<label class="format-field">Second reserve <select id="tagPartnerSecond"></select></label>
-</div><p id="tagPartnerProblem" role="status" hidden></p></fieldset></div>
+<div id="tagCpuParties" hidden>
+<fieldset id="tagPartner"><legend>Computer teammate</legend></fieldset>
+<fieldset id="tagOpponent1"><legend>Computer opponent 1</legend></fieldset>
+<fieldset id="tagOpponent2"><legend>Computer opponent 2</legend></fieldset>
+</div></div>
+<template id="tagCpuPicker">
+<label class="format-field">Party source <select data-part="Source"></select></label>
+<div data-part="Slots" hidden>
+<label class="format-field">Lead <select data-part="Lead"></select></label>
+<label class="format-field">First reserve <select data-part="First"></select></label>
+<label class="format-field">Second reserve <select data-part="Second"></select></label>
+</div><p data-part="Problem" role="status" hidden></p>
+</template>
 <p id="tagLobbyStatus" role="status"></p><div id="tagLinks"></div><button id="tagConnect">Create co-op room</button></div></dialog>
 <dialog id="friendLobby" aria-labelledby="friendTitle"><div class="dex-head"><h2 id="friendTitle">Battle a friend</h2><button id="friendClose" aria-label="Close friend battle">✕</button></div>
 <div class="friend-body"><p id="friendStatus" role="status"></p>

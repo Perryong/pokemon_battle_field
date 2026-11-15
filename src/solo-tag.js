@@ -1,12 +1,13 @@
 import {createTagMatch,tagComputerChoice,tagTeam} from './tag-match.js';
 import {generateRival} from './team.js';
 
-export function createSoloTag(party,onState,partner=null) {
+export function createSoloTag(party,onState,partner=null,{opponent1,opponent2}={}) {
   tagTeam(party);
-  const rival=generateRival(party.length);
+  const rival=opponent1 ?? generateRival(party.length);
   const teammate=partner ?? generateRival(party.length);
   tagTeam(teammate);
-  const match=createTagMatch([party,rival,teammate,generateRival(teammate.length)]);
+  const otherRival=opponent2 ?? generateRival(teammate.length);
+  const match=createTagMatch([party,rival,teammate,otherRival]);
   return {
     mode:'solo',seat:0,view:match.view(0),closed:false,
     submit(command) {

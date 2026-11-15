@@ -28,41 +28,61 @@ export function setupTag({storage,getParty,leaveScene}) {
     const source=teams[Number($('tagTeam').value)]?.party || [];
     return [...$('tagRoster').querySelectorAll('input:checked')].map(input=>source[Number(input.value)]);
   }
-  const partnerSlots=[ $('tagPartnerLead'),$('tagPartnerFirst'),$('tagPartnerSecond') ];
-  let partnerPool=[];
-  function partnerSourceChanged() {
-    const source=$('tagPartnerSource').value,fromDex=source==='dex';
-    $('tagPartnerSlots').hidden=source==='auto';
-    if(source!=='auto'){
-      partnerPool=fromDex?kanto.map(mon=>({id:mon.id,moves:mon.defaultMoves})):teams[Number(source)].party;
-      partnerSlots.forEach((slot,i)=>{
-        const choices=partnerPool.map((member,index)=>{
+  function cpuPicker(id) {
+    const fields=$('tagCpuPicker').content.cloneNode(true);
+    for(const el of fields.querySelectorAll('[data-part]')) el.id=id+el.dataset.part;
+    $(id).append(fields);
+    const source=$(id+'Source'),slots=['Lead','First','Second'].map(key=>$(id+key));
+    const problem=$(id+'Problem');
+    let pool=[];
+    function party() {
+      if(source.value==='auto') return null;
+      return slots.filter(slot=>slot.value!=='').map(slot=>pool[Number(slot.value)]);
+    }
+    function fillSlots() {
+      const fromDex=source.value==='dex';
+      $(id+'Slots').hidden=source.value==='auto';
+      if(source.value==='auto') return;
+      pool=fromDex?kanto.map(mon=>({id:mon.id,moves:mon.defaultMoves})):teams[Number(source.value)].party;
+      slots.forEach((slot,i)=>{
+        const choices=pool.map((member,index)=>{
           const species=lookup(member.id).name;
           const name=member.name?member.name+' ('+species+')':species;
           return new Option(fromDex?species:(index+1)+'. '+name,index);
         });
         slot.replaceChildren(new Option(i===0?'Choose a lead':'None',''),...choices);
-        slot.value=!fromDex && i<partnerPool.length?String(i):'';
+        slot.value=!fromDex && i<pool.length?String(i):'';
       });
     }
-    draft();
+    source.onchange=()=>{fillSlots();draft();};
+    for(const slot of slots) slot.onchange=draft;
+    return {
+      party,
+      reset(){
+        source.replaceChildren(new Option('Generate automatically','auto'),new Option('Kanto Pokédex','dex'),
+          ...teams.map((t,i)=>new Option(t.name,i)));
+        fillSlots();
+      },
+      validate(){
+        const members=party();
+        let message='';
+        if(members && slots[0].value==='') message='Choose a lead for this trainer.';
+        else if(members && source.value!=='dex' && new Set(members).size!==members.length)
+          message='Choose each team slot only once.';
+        problem.textContent=message;problem.hidden=!message;
+        return !message;
+      },
+    };
   }
-  function partnerParty() {
-    if($('tagPartnerSource').value==='auto') return null;
-    return partnerSlots.filter(slot=>slot.value!=='').map(slot=>partnerPool[Number(slot.value)]);
-  }
+  const partner=cpuPicker('tagPartner'),opponent1=cpuPicker('tagOpponent1'),opponent2=cpuPicker('tagOpponent2');
+  const cpuPickers=[partner,opponent1,opponent2];
   function draft() {
     const count=selectedParty().length;
     for(const input of $('tagRoster').querySelectorAll('input')) input.disabled=!input.checked && count>=3;
     const solo=$('tagMode').value==='solo' && invite===null;
-    $('tagPartner').hidden=!solo;
-    const partner=solo?partnerParty():null;
-    let problem='';
-    if(partner && !partnerSlots[0].value) problem='Choose a lead for your teammate.';
-    else if(partner && $('tagPartnerSource').value!=='dex' && new Set(partner).size!==partner.length)
-      problem='Choose each team slot only once.';
-    $('tagPartnerProblem').textContent=problem;$('tagPartnerProblem').hidden=!problem;
-    $('tagConnect').disabled=!!problem || !count || (invite!==null && (!isRoomId(invite) ||
+    $('tagCpuParties').hidden=!solo;
+    const valid=solo?cpuPickers.map(picker=>picker.validate()).every(Boolean):true;
+    $('tagConnect').disabled=!valid || !count || (invite!==null && (!isRoomId(invite) ||
       !['versus','coop'].includes(params.get('mode')) || !['ally','foe'].includes(role) || (role==='foe' && params.get('mode')==='coop')));
     $('tagConnect').textContent=invite!==null?'Join as '+(role==='ally'?'teammate':'opponent') :
       $('tagMode').value==='solo'?'Start solo battle':'Create '+titles[$('tagMode').value].toLowerCase()+' room';
@@ -79,11 +99,10 @@ export function setupTag({storage,getParty,leaveScene}) {
     teams=[{name:'Current party',party:getParty()}];
     try {teams.push(...readTeams(storage));} catch { /* Current party still works. */ }
     $('tagTeam').replaceChildren(...teams.map((t,i)=>new Option(t.name,i)));
-    $('tagPartnerSource').replaceChildren(new Option('Generate automatically','auto'),new Option('Kanto Pokédex','dex'),
-      ...teams.map((t,i)=>new Option(t.name,i)));
+    for(const picker of cpuPickers) picker.reset();
     $('tagMode').disabled=invite!==null;if(invite!==null) $('tagMode').value=params.get('mode');
     $('tagLobbyStatus').textContent=invite!==null?'Review your party before joining.':'';
-    $('tagDraft').hidden=$('tagConnect').hidden=false;$('tagLinks').replaceChildren();partnerSourceChanged();roster();dialog.showModal();
+    $('tagDraft').hidden=$('tagConnect').hidden=false;$('tagLinks').replaceChildren();roster();dialog.showModal();
   }
   function inviteLink(r,side) {
     const url=new URL(location.protocol==='file:'?'https://perryong.github.io/pokemon_battle_field/':location.href);
@@ -174,8 +193,6 @@ export function setupTag({storage,getParty,leaveScene}) {
     }
   }
   $('tagOpen').onclick=open;$('tagMode').onchange=draft;$('tagTeam').onchange=roster;
-  $('tagPartnerSource').onchange=partnerSourceChanged;
-  for(const slot of partnerSlots) slot.onchange=draft;
   $('tagClose').onclick=$('tagExit').onclick=leave;
   dialog.addEventListener('cancel',e=>{e.preventDefault();leave();});
   $('tagConnect').onclick=()=>{
@@ -184,7 +201,8 @@ export function setupTag({storage,getParty,leaveScene}) {
       const party=selectedParty();tagTeam(party);
       const mode=$('tagMode').value;
       if(mode==='solo' && invite===null){
-        room=createSoloTag(party,state,partnerParty());state(room,[]);return;
+        room=createSoloTag(party,state,partner.party(),{opponent1:opponent1.party(),opponent2:opponent2.party()});
+        state(room,[]);return;
       }
       room=new TagRoom({mode,invite,role,party,onLobby:lobby,onState:state,onEnd:end});
       $('tagMode').disabled=$('tagDraft').hidden=$('tagConnect').hidden=true;

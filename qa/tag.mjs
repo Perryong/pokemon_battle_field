@@ -57,7 +57,8 @@ try{
  assert.equal(await solo.locator('#tagRound').textContent(),'Turn 1');await solo.locator('#tagExit').click();
  const libraryKey='pokemon-battle-field.team-library.v1';
  const saved=JSON.stringify([{name:'Training squad',format:'gen1ou',party:[
-   ...team,{id:143,moves:[34]},{id:131,moves:[58]},{id:129,name:'Fin',moves:[150]},{id:6,moves:[53]}]}]);
+   ...team,{id:143,moves:[34]},{id:131,moves:[58]},{id:129,name:'Fin',moves:[150]},{id:6,moves:[53]}]},
+   {name:'Second squad',format:'gen1ou',party:[{id:25,name:'Scout',moves:[45]},{id:143,moves:[34]}]}]);
  await solo.evaluate(([key,value])=>localStorage.setItem(key,value),[libraryKey,saved]);
  await solo.locator('#tagOpen').click();
  await solo.locator('#tagPartnerSource').selectOption({label:'Training squad'});
@@ -80,7 +81,28 @@ try{
  await solo.locator('#tagMode').selectOption('solo');await solo.locator('#tagConnect').click();await started(solo);
  assert.match(await solo.locator('#tagField [data-seat="2"]').textContent(),/Dragonite/);
  assert.equal(await solo.locator('#tagField [data-seat="0"] b').textContent(),'Mewtwo');
+ await solo.locator('#tagExit').click();await solo.locator('#tagOpen').click();
+ await solo.locator('#tagOpponent1Source').selectOption({label:'Training squad'});
+ await solo.locator('#tagOpponent1Lead').selectOption('4');await solo.locator('#tagOpponent1First').selectOption('5');
+ await solo.locator('#tagOpponent1Second').selectOption('');
+ await solo.locator('#tagOpponent2Source').selectOption('dex');
+ assert.ok(await solo.locator('#tagConnect').isDisabled());
+ await solo.locator('#tagMode').selectOption('versus');
+ assert.ok(await solo.locator('#tagOpponent1').isHidden());assert.ok(await solo.locator('#tagConnect').isEnabled());
+ await solo.locator('#tagMode').selectOption('solo');
+ await solo.locator('#tagOpponent2Source').selectOption({label:'Second squad'});
+ await solo.locator('#tagOpponent2First').selectOption('0');
+ assert.ok(await solo.locator('#tagConnect').isDisabled());
+ await solo.locator('#tagOpponent2First').selectOption('1');
+ assert.equal(await solo.locator('#tagOpponent1Lead').inputValue(),'4');
+ await solo.locator('#tagConnect').click();await started(solo);
+ assert.equal(await solo.locator('#tagField [data-seat="1"] b').textContent(),'Magikarp');
+ assert.equal(await solo.locator('#tagField [data-seat="3"] b').textContent(),'Pikachu');
+ await solo.locator('#tagBench button').click();
+ await solo.waitForFunction(()=>['Fin used Splash','Scout used Growl'].every(action=>document.querySelector('#tagLog').textContent.includes(action)));
+ assert.equal(await solo.evaluate(key=>localStorage.getItem(key),libraryKey),saved);
  await solo.close();
+ console.log('Two distinct saved opponents used their equipped moves in an offline solo tag battle.');
  console.log('Selected a saved teammate from six slots and verified its equipped move, then fielded a Pokédex pick offline.');
  console.log('Solo tag: offline start, CPU teammate, manual target, completed match and fresh restart.');
  const h=await host('coop'),a=await join(h,'ally',team);
