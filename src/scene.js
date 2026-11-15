@@ -29,7 +29,7 @@ export async function buildScene(canvas){
  reset();size();new ResizeObserver(size).observe(canvas);
  function sparks(center,radius,n=18){for(let i=0;i<n;i++){let a=i*2.39996,el=(i%7)/7*.95-.25;let o=parts[i];o.visible=true;o.position.copy(center).add(v(Math.cos(a)*radius,el*radius,sin(a)*radius));let s=.04+(.14*(1-i/n));o.scale.set(s*1.5,s,s)}}
  function draw(t,action='idle',u=0,hp={playerHP:100,rivalHP:100}){
- for(const o of fx.children)o.visible=false;
+ bx.visible=true;for(const o of fx.children)o.visible=false;
  const foe=action==='flame'||action==='blast',player=['quick','tail','bolt','guard'].includes(action);
  const actor=foe?C:P,target=foe?P:C,move=typeof hp.move==='number'?moveById(hp.move):hp.move;
  P.root.position.copy(homeP);C.root.position.copy(homeC);P.root.rotation.set(0,aimYaw(homeP,homeC,.35,.31),0);C.root.rotation.set(0,aimYaw(homeC,homeP,.35,.42),0);
@@ -58,6 +58,36 @@ export async function buildScene(canvas){
  for(const [i,f] of [P,C].entries()){const shade=shadows[i];shade.position.set(f.root.position.x,.092,f.root.position.z);shade.rotation.y=f.root.rotation.y;shade.visible=f.root.visible;shade.scale.set(f.size.x*.38*f.root.scale.x,.004,f.size.z*.40*f.root.scale.z)}
  post.render(scene,cam);
  }
- function focus(){const h=Math.max(P.height,C.height);controls.target.set((homeP.x+homeC.x)/2,.12+h*.48,.62);cam.position.copy(controls.target).add(v(3,6.8,15));const gap=homeP.distanceTo(homeC)+(P.size.z+C.size.z)*.6+1.0;cam.zoom=Math.max(1,Math.min(controls.maxZoom,(cam.right-cam.left)/gap,(cam.top-cam.bottom)/(h+1.0)));cam.updateProjectionMatrix();controls.update()}
- return {draw,reset,focus,setPair,controls,THREE:T,renderer,post,scene,camera:cam};
+ const tagFighters=[],tagPlaces=[v(-2.9,floor,2.1),v(2.9,floor,1.5),v(-3.6,floor,-1.55),v(3.25,floor,-2.3)];
+ function clearTag(){
+   for(const f of tagFighters) if(f) removeFighter(f);
+   tagFighters.length=0;moves.clear();
+ }
+ function drawTag(field,seat,t,beat,u,reduced){
+   P.root.visible=C.root.visible=bx.visible=false;
+   shadows.forEach(s=>s.visible=false);for(const o of fx.children)o.visible=false;
+   const place=i=>tagPlaces[i^seat];
+   for(const [i,mon] of field.entries()){
+     let f=tagFighters[i];
+     if(f?.mon.id!==mon.id){if(f) removeFighter(f);tagFighters[i]=f=makeFighter(p,lookup(mon.id));}
+     const pos=place(i);
+     f.root.visible=mon.hp>0;f.root.position.copy(pos);f.root.scale.setScalar(1);
+     f.root.rotation.set(0,aimYaw(pos,place(i^1),.35,.32),0);
+     f.body.position.set(0,0,0);f.body.rotation.set(0,0,0);f.body.scale.setScalar(1);
+     pose(f,{t:reduced?0:t,u:0,wind:0,strike:0,recoil:0,kind:'idle'});
+   }
+   const move=moveById(beat?.move);
+   if(move){
+     const a=beat.actor,b=beat.target!=null && beat.target!==a?beat.target:a^1;
+     const actor=tagFighters[a],target=tagFighters[b];
+     actor.root.rotation.y=aimYaw(place(a),place(b),.35,.32);
+     moves.perform({actor,target,move,t,u,from:place(a),to:place(b),hit:beat.hit,meta:{phase:beat.charge?'charge':'strike'},reduced});
+     for(const i of new Set(beat.damaged || [])){
+       if(i!==a && i!==b) pose(tagFighters[i],{t,u,kind:'hurt',wind:0,strike:0,recoil:pulse(.40,.53,.70,.92,u)});
+     }
+   }else moves.clear();
+   post.render(scene,cam);
+ }
+ function focus(){if(tagFighters.length){reset();cam.zoom=1.25;cam.updateProjectionMatrix();return;}const h=Math.max(P.height,C.height);controls.target.set((homeP.x+homeC.x)/2,.12+h*.48,.62);cam.position.copy(controls.target).add(v(3,6.8,15));const gap=homeP.distanceTo(homeC)+(P.size.z+C.size.z)*.6+1.0;cam.zoom=Math.max(1,Math.min(controls.maxZoom,(cam.right-cam.left)/gap,(cam.top-cam.bottom)/(h+1.0)));cam.updateProjectionMatrix();controls.update()}
+ return {draw,drawTag,clearTag,reset,focus,setPair,controls,THREE:T,renderer,post,scene,camera:cam};
 }

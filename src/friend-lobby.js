@@ -26,6 +26,7 @@ export function setupFriendLobby({getTeam,getFormat,editTeam,onStart,onTurn,onEx
     $('friendLeave').hidden = !room && invite === null;
     $('friendLeave').textContent = busy ? 'Leave room' : 'Back to solo battle';
     $('friendShare').hidden = !busy || !room.shareUrl;
+    $('tagOpen').disabled=Boolean(busy);
     $('friendOpen').textContent = room ? 'Friend room' : 'Battle a friend';
   }
 
@@ -100,6 +101,7 @@ export function setupFriendLobby({getTeam,getFormat,editTeam,onStart,onTurn,onEx
   $('friendLeave').onclick = reset;
   window.addEventListener('pagehide',()=>room?.leave());
   return {
+    get busy() { return Boolean(room && !room.closed); },
     get current() { return room?.started ? room : null; },
     get status() { return status; },
     openInvite() { if (invite !== null) open(); },

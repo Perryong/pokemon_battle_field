@@ -18,6 +18,10 @@ After running `npm ci` and `npm run build`, open `dist/pokemon-battle-field.html
 
 The host runs the Gen I simulator. Keep both tabs open for the match. Leaving or refreshing ends the connection, and a new invite starts a new battle. Friend battles use PeerJS Cloud for signaling and WebRTC for the game connection. Network restrictions or signaling service outages can prevent joining. Solo play and Exhibition work offline.
 
+**Tag battles.** Open **Tag battle** and choose one to three Pokémon from your current party or a named saved team. The first checked party slot leads. For **Co-op**, share the teammate link with one friend. Two computer trainers bring matching party sizes. For **2v2**, send the teammate link to your partner and the opponent link to your two rivals. Each trainer controls one active Pokémon, can switch to their own reserves, and chooses a target for single-target moves. A side wins when both opposing trainers run out of Pokémon. Keep every battle tab open until the match ends.
+
+Kanto tag is a custom format. It uses Showdown’s Generation III multi-battle mechanics, RBY-legal species and movesets, imported levels and stats, and no held items or abilities. Spread attacks follow Generation III targeting, so Earthquake can hit your partner. Singles and RBY OU continue to use the Gen I simulator.
+
 **Inspect a move.** Pick a technique from a species' learnset and press **Preview move**. The Pokédex shows base PP; battle buttons show the current and maximum PP with PP Ups. Each orbitable model shares the arena's metre scale with the 1.7 m comparison trainer.
 
 **Watch.** Exhibition uses a separate seeded match with the same two teams. The 45-second timeline plays at 1.5× by default and displays up to five turns or a party defeat; you can pause, scrub, or choose 1× or 2× speed. Open `?mode=exhibition`, `?t=12` or a Pokédex entry such as `?dex=106`.

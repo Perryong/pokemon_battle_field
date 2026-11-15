@@ -68,3 +68,19 @@
 .library-actions button,.library-row button{padding:8px 10px;font-size:12px}
 .library-paste{justify-content:space-between}.library-paste a{color:#345a48;font-size:12px}
 #libraryMessage{margin:0}#libraryMessage:empty{display:none}
+
+#tagLobby{padding:0;width:min(490px,95vw);max-height:94dvh;color:var(--ink);background:#fafbf3;border:1px solid #698275}
+#tagLobby::backdrop{background:#112c36a8}
+#tagLobby .format-field{display:flex;justify-content:space-between;gap:8px;margin-bottom:12px;align-items:center}
+#tagLobby select{max-width:70%}#tagRoster,.tag-field{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#tagDraft fieldset{border:1px solid var(--line);margin:0 0 12px;padding:9px}
+#tagDraft legend,#tagSeat,.tag-field small{font:11px/1.5 ui-monospace,monospace}
+#tagRoster label{display:flex;align-items:center;gap:5px;font-size:13px}
+#tagLinks label{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px;margin:7px 0}
+#tagLinks label strong{grid-column:1/-1;font-size:12px}#tagLinks input{width:100%;min-width:0;padding:7px}
+.tag-field{margin-bottom:12px}.tag-field>div{display:grid;grid-template-columns:32px 1fr;align-items:center;gap:4px;border:1px solid var(--line);background:#f4f7ef;padding:6px;border-radius:5px}
+.tag-field .portrait{width:32px;height:32px}.tag-field strong,.tag-field small{display:block}
+.tag-field small{font-size:10px}.tag-field b{font-size:12px}.tag-field meter{display:block;width:100%;height:9px}
+.tag-actions{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.tag-actions button{font-size:12px}
+#tagLog{max-height:155px;overflow:auto;padding-left:22px;font-size:12px}
+#tagConsole[hidden],#singlesConsole[hidden]{display:none}

@@ -1,6 +1,7 @@
 import './style.css';
 import {buildScene} from './scene.js';
 import {setupFriendLobby} from './friend-lobby.js';
+import {setupTag} from './tag-ui.js';
 import {setupDex} from './dex.js';
 import {lookup, dexNumber, typeColors} from './roster.js';
 import {portrait} from './thumbs.js';
@@ -73,6 +74,7 @@ $('dex').addEventListener('close',()=>{
   $('partyBattle').textContent='Start team battle';
   $('rivalEditor').hidden=false;
 });
+const tag=setupTag({storage,getParty:()=>team[0],leaveScene:()=>{arena?.clearTag();last=performance.now();refresh(true);}});
 $('buildTeam').onclick=()=>dex.open(team[0][0].id);
 $('pickPlayer').onclick=()=>{const f=currentFrame();dex.open(f.playerBaseId,0,f.playerSlot);};
 $('pickRival').onclick=()=>dex.open(currentFrame().rivalBaseId,1);
@@ -224,6 +226,7 @@ function refresh(force=false) {
   $('livepanel').hidden = show; $('showpanel').hidden = !show;
   $('history').hidden = show || !$('turnLog').children.length;
   const room=friends.current;
+  $('tagOpen').disabled=!ready || friends.busy || Boolean(room);
   $('battleFormat').textContent=formatName(room?.format || format);
   for (const id of ['show','openDex','buildTeam','pickPlayer','pickRival']) $(id).disabled=Boolean(room);
   $('again').hidden = Boolean(room) || show || !!sequence || !state.winner;
@@ -285,6 +288,11 @@ function advanceClock(now) {
 }
 
 function animate(now) {
+  if(tag.active){
+    const dt=Math.max(0,(now-last)/1000);last=now;
+    if(!document.hidden)tag.draw(arena,now/1000,dt,playbackRate,reduced);
+    requestAnimationFrame(animate);return;
+  }
   advanceClock(now);
   if (!document.hidden && !$('dex').open) draw();
   requestAnimationFrame(animate);
@@ -296,7 +304,7 @@ $('focus').onclick = () => arena?.focus();
 $('reset').onclick = () => arena?.reset();
 document.addEventListener('visibilitychange', () => { last=performance.now(); });
 $('replayRate').onchange = () => {
-  advanceClock(performance.now());
+  if(!tag.active) advanceClock(performance.now());
   playbackRate=Number($('replayRate').value);
 };
 $('pause').onclick = () => { last=performance.now(); paused=!paused; refresh(true); };
@@ -313,7 +321,8 @@ buildScene($('field')).then(r => {
   if (url.searchParams.has('t') && Number.isFinite(Number(url.searchParams.get('t')))) window.__diorama.freeze(Number(url.searchParams.get('t')));
   else if (url.searchParams.get('mode')==='exhibition') useMode('show');
   const dexId=Number(url.searchParams.get('dex'));
-  if (new URLSearchParams(location.hash.slice(1)).has('battle')) friends.openInvite();
+  if (tag.invited) tag.open();
+  else if (new URLSearchParams(location.hash.slice(1)).has('battle')) friends.openInvite();
   else if (Number.isInteger(dexId)&&lookup(dexId)) dex.open(dexId);
   requestAnimationFrame(animate);
 }).catch(error => {
