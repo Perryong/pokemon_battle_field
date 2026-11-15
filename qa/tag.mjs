@@ -34,6 +34,28 @@ async function same(pages){
  for(const field of snapshots.slice(1))assert.deepEqual(sort(field),sort(snapshots[0]));
 }
 try{
+ const solo=await page(base,team,390);
+ await solo.context().setOffline(true);
+ await solo.locator('#tagOpen').click();await solo.locator('#tagMode').selectOption('solo');
+ await solo.locator('#tagRoster input').last().uncheck();
+ // Reproducible CPU parties for a complete offline battle.
+ await solo.evaluate(()=>{Math.random=()=>128.5/151;});
+ await solo.getByRole('button',{name:'Start solo battle'}).click();await started(solo);
+ assert.equal(await solo.locator('#tagHeading').textContent(),'Solo tag');
+ assert.match(await solo.locator('#tagField [data-seat="2"]').textContent(),/CPU partner/);
+ assert.equal(await solo.locator('#tagLinks input').count(),0);
+ await solo.locator('[data-move="94"]').click();await solo.locator('[data-target="3"]').click();
+ await solo.waitForFunction(()=>document.querySelector('#tagLog').children.length>0);
+ for(let i=0;i<10;i++){
+   await solo.waitForFunction(()=>document.querySelector('#tagMoves button:enabled') || document.querySelector('#tagPrompt').textContent.includes('wins!'));
+   if((await solo.locator('#tagPrompt').textContent()).includes('wins!')) break;
+   await solo.locator('[data-move="129"]').click();
+ }
+ assert.equal(await solo.locator('#tagPrompt').textContent(),'Blue team wins!');
+ await solo.locator('#tagExit').click();assert.ok(await solo.locator('#singlesConsole').isVisible());
+ await solo.locator('#tagOpen').click();await solo.locator('#tagConnect').click();await started(solo);
+ assert.equal(await solo.locator('#tagRound').textContent(),'Turn 1');await solo.close();
+ console.log('Solo tag: offline start, CPU teammate, manual target, completed match and fresh restart.');
  const h=await host('coop'),a=await join(h,'ally',team);
  await Promise.all([h,a].map(started));
  await a.locator('#tagBench button').click();await h.locator('[data-move="94"]').click();

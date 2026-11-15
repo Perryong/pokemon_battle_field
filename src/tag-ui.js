@@ -1,5 +1,6 @@
 import {TagRoom} from './tag-room.js';
-import {tagTeam,sideName,trainers} from './tag-match.js';
+import {createSoloTag} from './solo-tag.js';
+import {tagTeam,trainers} from './tag-match.js';
 import {isRoomId} from './friend-room.js';
 import {readTeams} from './team-library.js';
 import {lookup} from './roster.js';
@@ -9,7 +10,7 @@ const $=id=>document.getElementById(id);
 function button(label,fn) {
   const b=document.createElement('button');b.textContent=label;b.onclick=fn;return b;
 }
-const title=mode=>mode==='coop'?'Co-op tag':'2v2 tag';
+const titles={solo:'Solo tag',coop:'Co-op tag',versus:'2v2 tag'};
 const effects={self:'Self',allAdjacent:'All adjacent Pokémon',allAdjacentFoes:'Both opponents',allySide:'Your side',all:'Entire field'};
 
 export function setupTag({storage,getParty,leaveScene}) {
@@ -17,7 +18,11 @@ export function setupTag({storage,getParty,leaveScene}) {
   let invite=params.get('tag'),role=params.get('side'),room=null,teams=[],queue=[],elapsed=0,selected=null;
   const rate=$('replayRate').parentElement,originalRateParent=rate.parentElement;
   const locked=()=>!room || room.closed || room.choice || queue.length || room.view.ended;
-  const trainer=seat=>seat===room.seat?'You':seat===(room.seat^2)?'Partner':room.mode==='coop'?'CPU '+(seat===1?'1':'2'):trainers[seat];
+  function trainer(seat) {
+    if(seat===room.seat) return 'You';
+    if(seat===(room.seat^2)) return room.mode==='solo'?'CPU partner':'Partner';
+    return room.mode==='versus'?trainers[seat]:'CPU '+(seat===1?'1':'2');
+  }
   const poke=(field,i)=>lookup(field[i].id).name;
   function selectedParty() {
     const source=teams[Number($('tagTeam').value)]?.party || [];
@@ -28,7 +33,8 @@ export function setupTag({storage,getParty,leaveScene}) {
     for(const input of $('tagRoster').querySelectorAll('input')) input.disabled=!input.checked && count>=3;
     $('tagConnect').disabled=!count || (invite!==null && (!isRoomId(invite) ||
       !['versus','coop'].includes(params.get('mode')) || !['ally','foe'].includes(role) || (role==='foe' && params.get('mode')==='coop')));
-    $('tagConnect').textContent=invite!==null?'Join as '+(role==='ally'?'teammate':'opponent'):'Create '+title($('tagMode').value).toLowerCase()+' room';
+    $('tagConnect').textContent=invite!==null?'Join as '+(role==='ally'?'teammate':'opponent') :
+      $('tagMode').value==='solo'?'Start solo battle':'Create '+titles[$('tagMode').value].toLowerCase()+' room';
   }
   function roster() {
     const party=teams[Number($('tagTeam').value)]?.party || [];
@@ -80,8 +86,8 @@ export function setupTag({storage,getParty,leaveScene}) {
   function command(c) {if(locked()) return;room.submit(c.command);selected=null;controls();}
   function controls() {
     const v=room.view,options=v.choices;
-    $('tagPrompt').textContent=room.closed?'Connection closed.':v.ended?(v.winner?v.winner+' team wins!':'Draw.'):
-      queue.length?'Resolving turn…':room.choice?'Choice locked.':!options.length?'Waiting for other trainers.':
+    $('tagPrompt').textContent=room.closed?(room.mode==='solo'?'Battle ended.':'Connection closed.'):v.ended?(v.winner?v.winner+' team wins!':'Draw.'):
+      queue.length?'Resolving turn…':room.choice?'Choice locked.':!options.length?(room.mode==='solo'?'Computer trainers are playing.':'Waiting for other trainers.'):
       v.forced?'Send a replacement.':selected?'Choose a target.':'Attack or switch.';
     $('tagMoves').replaceChildren();$('tagTargets').replaceChildren();$('tagBench').replaceChildren();
     const disabled=Boolean(locked());
@@ -108,7 +114,7 @@ export function setupTag({storage,getParty,leaveScene}) {
     if (dialog.open) dialog.close();
     $('tagConsole').hidden=false;$('singlesConsole').hidden=true;$('tagRate').append(rate);
     for(const id of ['tagOpen','friendOpen','openDex','show','play']) $(id).disabled=true;
-    $('tagHeading').textContent=title(r.mode);$('tagRound').textContent='Turn '+r.view.round;
+    $('tagHeading').textContent=titles[r.mode];$('tagRound').textContent='Turn '+r.view.round;
     $('tagSeat').textContent='Your trainer · '+trainers[r.seat];
     const log=$('tagLog');
     for(const e of events) {
@@ -141,7 +147,11 @@ export function setupTag({storage,getParty,leaveScene}) {
     if(room) return;
     try {
       const party=selectedParty();tagTeam(party);
-      room=new TagRoom({mode:$('tagMode').value,invite,role,party,onLobby:lobby,onState:state,onEnd:end});
+      const mode=$('tagMode').value;
+      if(mode==='solo' && invite===null){
+        room=createSoloTag(party,state);state(room,[]);return;
+      }
+      room=new TagRoom({mode,invite,role,party,onLobby:lobby,onState:state,onEnd:end});
       $('tagMode').disabled=$('tagDraft').hidden=$('tagConnect').hidden=true;
       $('tagLobbyStatus').textContent='Connecting trainers…';
     } catch(error){end(error.message);}
@@ -151,7 +161,11 @@ export function setupTag({storage,getParty,leaveScene}) {
     draw(arena,t,dt,speed,reduced){
       elapsed+=dt*speed;
       while(queue.length && elapsed>=1.25){elapsed-=1.25;queue.shift();if(!queue.length) controls();}
-      if(!queue.length) elapsed=0;
+      if(!queue.length){
+        elapsed=0;
+        // Play CPU-only replacements and turns after the player's party is out, one phase at a time.
+        if(room.mode==='solo' && !room.view.ended && !room.view.choices.length) room.submit();
+      }
       const event=queue[0];
       const caption=event?.text || $('tagLog').lastChild?.textContent || 'All four trainers are on the field.';
       if(!room.closed && $('tagAction').textContent!==caption) $('tagAction').textContent=caption;
