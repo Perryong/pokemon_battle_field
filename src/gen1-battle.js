@@ -163,7 +163,7 @@ function choiceFor(side,party,selection,key) {
   return 'move '+legal.slot;
 }
 
-/** A synchronous level-100 RBY singles match. Party slots keep their original order. */
+/** A synchronous RBY singles match. Party slots keep their original order. */
 export function createPartyMatch(playerParty,rivalParty,seed,format=CASUAL) {
   const player=checkedTeam(playerParty,format), rival=checkedTeam(rivalParty,format);
   const battle=new Battle({formatid:format,seed:battleSeed(seed)});

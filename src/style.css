@@ -56,3 +56,15 @@
 @media(min-width:681px){.layout{grid-template-columns:minmax(0,1fr) minmax(300px,340px)}}
 
 #ouRules{margin:5px 0;font-size:12px}#ouRules summary{cursor:pointer}#ouRules p{margin:4px 0;line-height:1.45}#ouRules a{color:#326449}
+
+.team-library{border-block:1px solid var(--line);margin:9px 0;font-size:13px}
+.team-library summary{padding:8px 0;cursor:pointer;font-weight:650}
+.library-panel{padding:3px 0 10px;display:grid;gap:8px}
+.library-row,.library-actions,.library-paste{display:flex;align-items:end;flex-wrap:wrap;gap:6px}
+.library-row label{flex:1 1 150px;min-width:0;display:grid;gap:3px}
+.library-row label,.library-paste label{color:var(--dim);font-size:12px}
+.library-row :is(select,input),#teamPaste{width:100%;min-width:0;background:#fffef8;color:var(--ink);border:1px solid #b9cbb9;border-radius:4px;padding:7px}
+#teamPaste{resize:vertical;font:12px/1.5 ui-monospace,monospace}
+.library-actions button,.library-row button{padding:8px 10px;font-size:12px}
+.library-paste{justify-content:space-between}.library-paste a{color:#345a48;font-size:12px}
+#libraryMessage{margin:0}#libraryMessage:empty{display:none}

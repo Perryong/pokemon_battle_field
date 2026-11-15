@@ -44,7 +44,7 @@ function apply(newTeams,newFormat) {
   exhibition = null;mode='play';rematch();
 }
 
-const dex = setupDex({team:() => team, getFormat:()=>format, apply});
+const dex = setupDex({team:() => team, getFormat:()=>format, apply, storage});
 const friends = setupFriendLobby({
   getTeam:()=>team[0],
   getFormat:()=>format,

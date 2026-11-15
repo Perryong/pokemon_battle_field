@@ -4,13 +4,14 @@ import {portrait} from './thumbs.js';
 import {PARTY_LIMIT, generateRival} from './team.js';
 import {OU,partyProblem} from './formats.js';
 import {strategySets,roleText,tierName,smogonPage} from './strategy.js';
+import {setupTeamLibrary} from './team-library-ui.js';
 import {inspector} from './inspect.js';
 
 const $ = id => document.getElementById(id);
 const searchKey = text => text.normalize('NFD').replace(/\p{Diacritic}/gu,'')
   .replaceAll('♀','f').replaceAll('♂','m').toLowerCase().replace(/[^a-z0-9]/g,'');
 
-export function setupDex({team, getFormat, apply}) {
+export function setupDex({team, getFormat, apply, storage}) {
   const dialog = $('dex');
   let members = [], slot = 0, rivalMode = false;
   let selected = null, draft = [], legalMoves = [], studio;
@@ -39,7 +40,7 @@ export function setupDex({team, getFormat, apply}) {
 
   function effectiveParty() {
     if (!rivalMode && selected.id===members[slot]?.id) {
-      return members.map((member,i)=>i===slot?{id:selected.id,moves:draft.filter(Boolean)}:member);
+      return members.map((member,i)=>i===slot?{...member,moves:draft.filter(Boolean)}:member);
     }
     return members;
   }
@@ -185,7 +186,8 @@ export function setupDex({team, getFormat, apply}) {
     validateDraft();
   }
   function stage(append) {
-    const member={id:selected.id,moves:draft.filter(Boolean)};
+    const previous=!append && members[slot]?.id===selected.id ? members[slot] : {};
+    const member={...previous,id:selected.id,moves:draft.filter(Boolean)};
     if (validateLoadout(selected,member.moves) || (append && members.length>=PARTY_LIMIT)) return;
     if (append) {slot=members.length;members.push(member);} else members[slot]=member;
     rivalMode=false;
@@ -199,10 +201,18 @@ export function setupDex({team, getFormat, apply}) {
     apply([home,generateRival(home.length,rivalLead,format)],format);
     dialog.close();
   }
+  const library=setupTeamLibrary(storage,effectiveParty,(entry)=>{
+    members=structuredClone(entry.party);slot=0;rivalMode=false;
+    if (!$('dexFormat').disabled) $('dexFormat').value=entry.format;
+    $('dexSearch').value=$('dexType').value='';
+    list();detail(members[0].id,true);renderParty();
+    $('partyNotice').textContent='';
+  });
   function open(id, side = 0, preferredSlot = 0, lockedFormat=null) {
     $('dexFormat').value=lockedFormat || getFormat();
     $('dexFormat').disabled=Boolean(lockedFormat);
-    members=team()[0].map(p=>({id:p.id,moves:[...p.moves]}));
+    members=structuredClone(team()[0]);
+    library.reset();
     slot=Math.max(0,Math.min(preferredSlot,members.length-1));rivalMode=side===1;
     $('partyNotice').textContent='';
     $('dexSearch').value = $('dexType').value = '';
@@ -219,7 +229,7 @@ export function setupDex({team, getFormat, apply}) {
     const set=strategySets(selected)[Number($('strategySelect').value)];
     draft=[...set.moves];
     while (draft.length<4) draft.push(null);
-    if (!rivalMode && members[slot].id===selected.id) members[slot]={id:selected.id,moves:[...set.moves]};
+    if (!rivalMode && members[slot].id===selected.id) members[slot]={...members[slot],moves:[...set.moves]};
     $('previewMove').value=set.moves[0];showMoveInfo();renderSlots();
     $('partyNotice').textContent=members[slot].id===selected.id && !rivalMode ? 'Equipped '+set.name+' in slot '+(slot+1)+'.' :
       'Equipped '+set.name+'. Add '+selected.name+' or save it to a slot.';

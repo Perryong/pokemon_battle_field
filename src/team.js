@@ -28,10 +28,7 @@ export function saveTeam(storage, team) {
 
 const partiesKey = 'pokemon-battle-field.parties.v2';
 export const PARTY_LIMIT = 6;
-const isMember = member => Number.isInteger(member?.id) && !!lookup(member.id) &&
-  !validateLoadout(member.id, member.moves);
-const isParty = party => Array.isArray(party) && party.length > 0 &&
-  party.length <= PARTY_LIMIT && party.every(isMember);
+const isParty = party => !partyProblem(party,CASUAL);
 
 export function generateRival(size, lead = null, format = CASUAL) {
   if (!Number.isInteger(size) || size < 1 || size > PARTY_LIMIT) throw new RangeError('Choose one to six Pokémon.');
